@@ -123,6 +123,7 @@ sequenceDiagram
 | `profession` | Varchar(100) | Not Null | 本業・職業 |
 | `affiliation` | Varchar(100) | Nullable | 所属団体 |
 | `skills` | Text | Nullable | 得意分野（カンマ区切りまたはJSON形式） |
+| `roles` | Json | Nullable | 会員属性・ロール（一般会員, 幹事, システム管理等） |
 | `referrer_id` | BigInt | Nullable, Foreign Key | 紹介者のユーザーID (`comittee_users.id` への参照) |
 | `referrer_text` | Varchar(100) | Nullable | 紐付け前、または外部の紹介者名（自由テキスト） |
 | `line_display_name` | Varchar(100) | Not Null | LINEグループ内のアカウント表示名 |
@@ -149,3 +150,4 @@ sequenceDiagram
 ## 5. 改訂履歴
 - 2026-06-21: 新規作成（初版）
 - 2026-06-21: 仮会員承認時の承認者（管理者ID）および承認日時の記録仕様を追記（第2版）
+- 2026-06-21: 複数会員属性の要件に対応するため、roles（ロール）カラムを追記（第3版）
