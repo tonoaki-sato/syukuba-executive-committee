@@ -212,13 +212,16 @@ class AdminController extends Controller
             'users' => ['required', 'array'],
             'users.*' => ['exists:comittee_users,id'],
             'roles' => ['required', 'array'],
+            'copy_gozaichi' => ['nullable', 'boolean'],
         ]);
 
         $targetYear = $request->target_year;
         $userIds = $request->users;
         $rolesInput = $request->roles; // user_id => [roles] のマップ
+        $copyGozaichi = $request->boolean('copy_gozaichi');
+        $activeYear = session('active_fiscal_year', date('Y'));
 
-        \DB::transaction(function() use ($targetYear, $userIds, $rolesInput) {
+        \DB::transaction(function() use ($targetYear, $userIds, $rolesInput, $copyGozaichi, $activeYear) {
             foreach ($userIds as $userId) {
                 $roles = $rolesInput[$userId] ?? ['general'];
 
@@ -233,6 +236,52 @@ class AdminController extends Controller
                         'status' => 'active',
                     ]
                 );
+            }
+
+            // ござ市関連データの引き継ぎ
+            if ($copyGozaichi) {
+                $targetEvent = \App\Models\GozaichiEvent::updateOrCreate(
+                    ['fiscal_year' => $targetYear],
+                    [
+                        'recruitment_status' => 'closed',
+                        'is_active' => true,
+                    ]
+                );
+
+                $sourceEvent = \App\Models\GozaichiEvent::where('fiscal_year', $activeYear)->first();
+                if ($sourceEvent) {
+                    foreach ($sourceEvent->feeSettings as $sourceFee) {
+                        $targetEvent->feeSettings()->updateOrCreate(
+                            ['fee_key' => $sourceFee->fee_key],
+                            ['fee_value' => $sourceFee->fee_value]
+                        );
+                    }
+                } else {
+                    $defaults = [
+                        'member_1st' => 2000,
+                        'member_general_2nd' => 3000,
+                        'member_A_2nd' => 4000,
+                        'member_B_2nd' => 5000,
+                        'general_1st' => 6000,
+                        'general_A_1st' => 8000,
+                        'general_B_1st' => 10000,
+                        'general_2nd' => 6000,
+                        'general_A_2nd' => 8000,
+                        'general_B_2nd' => 10000,
+                        'tent' => 4500,
+                        'weight' => 500,
+                        'desk' => 2500,
+                        'chair' => 500,
+                        'trash_45' => 500,
+                        'trash_70' => 700,
+                    ];
+                    foreach ($defaults as $key => $val) {
+                        $targetEvent->feeSettings()->updateOrCreate(
+                            ['fee_key' => $key],
+                            ['fee_value' => $val]
+                        );
+                    }
+                }
             }
         });
 

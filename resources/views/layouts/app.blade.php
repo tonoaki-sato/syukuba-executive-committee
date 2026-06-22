@@ -140,6 +140,24 @@
                         <a class="nav-link {{ Route::is('meetings.*') ? 'active' : '' }}" href="{{ route('meetings.index') }}">会議管理</a>
                     </li>
                     
+                    @if(Auth::user()->isSystemAdmin() || Auth::user()->isKanji())
+                    <li class="nav-item dropdown ms-lg-2">
+                        <a class="nav-link dropdown-toggle {{ Request::is('goza*') ? 'active' : '' }}" href="#" id="gozaDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            ござ市管理
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="gozaDropdown">
+                            <li><a class="dropdown-item {{ Route::is('goza.index') ? 'active' : '' }}" href="{{ route('goza.index') }}">ダッシュボード</a></li>
+                            <li><a class="dropdown-item {{ Route::is('goza.applications.*') ? 'active' : '' }}" href="{{ route('goza.applications.index') }}">出店応募管理</a></li>
+                            <li><a class="dropdown-item {{ Route::is('goza.spots.*') ? 'active' : '' }}" href="{{ route('goza.spots.index') }}">出店場所配置</a></li>
+                            <li><a class="dropdown-item {{ Route::is('goza.payments.*') ? 'active' : '' }}" href="{{ route('goza.payments.index') }}">当日集金・受領</a></li>
+                            @if(Auth::user()->isSystemAdmin())
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item {{ Route::is('goza.settings.*') ? 'active' : '' }}" href="{{ route('goza.settings.index') }}">募集設定・料金マスタ</a></li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+                    
                     <!-- システム管理者限定メニュー -->
                     @if(Auth::user()->isSystemAdmin())
                     <li class="nav-item dropdown ms-lg-3">

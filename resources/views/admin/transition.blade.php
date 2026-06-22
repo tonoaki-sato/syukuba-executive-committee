@@ -114,6 +114,18 @@
                         </table>
                     </div>
                     
+                    <div class="mb-4 p-3 bg-light border rounded">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="copy_gozaichi" id="copy_gozaichi" value="1" checked>
+                            <label class="form-check-label fw-bold text-dark" for="copy_gozaichi">
+                                ござ市関連データ（料金マスタ等）を引き継ぐ
+                            </label>
+                            <div class="form-text small">
+                                前年度の料金設定マスタを新規年度にコピーします。チェックを外した場合、移行先年度のイベント設定時に初期値（デフォルト単価）が設定されます。
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary me-md-2 px-4">キャンセル</a>
                         <button type="submit" class="btn btn-primary px-5">移行・引き継ぎを実行する</button>

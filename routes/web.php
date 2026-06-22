@@ -92,6 +92,35 @@ Route::middleware(['auth', 'approved', 'admin'])->prefix('admin')->name('admin.'
     Route::post('/users/transition', [AdminController::class, 'executeTransition'])->name('users.transition-execute');
 });
 
+// --- ござ市管理ルート（幹事・管理者共通） ---
+Route::middleware(['auth', 'approved', 'gozaichi'])->prefix('goza')->name('goza.')->group(function () {
+    // ダッシュボード
+    Route::get('/', [\App\Http\Controllers\GozaichiController::class, 'index'])->name('index');
+
+    // 出店応募管理
+    Route::get('/applications', [\App\Http\Controllers\GozaichiApplicationController::class, 'index'])->name('applications.index');
+    Route::get('/applications/create', [\App\Http\Controllers\GozaichiApplicationController::class, 'create'])->name('applications.create');
+    Route::post('/applications', [\App\Http\Controllers\GozaichiApplicationController::class, 'store'])->name('applications.store');
+    Route::get('/applications/{id}', [\App\Http\Controllers\GozaichiApplicationController::class, 'show'])->name('applications.show');
+    Route::get('/applications/{id}/edit', [\App\Http\Controllers\GozaichiApplicationController::class, 'edit'])->name('applications.edit');
+    Route::put('/applications/{id}', [\App\Http\Controllers\GozaichiApplicationController::class, 'update'])->name('applications.update');
+    Route::put('/applications/{id}/status', [\App\Http\Controllers\GozaichiApplicationController::class, 'updateStatus'])->name('applications.updateStatus');
+
+    // 出店場所配置
+    Route::get('/spots', [\App\Http\Controllers\GozaichiSpotController::class, 'index'])->name('spots.index');
+    Route::put('/spots/{id}', [\App\Http\Controllers\GozaichiSpotController::class, 'update'])->name('spots.update');
+
+    // 当日集金・領収書・許可証
+    Route::get('/payments', [\App\Http\Controllers\GozaichiPaymentController::class, 'index'])->name('payments.index');
+    Route::put('/payments/{id}/receive', [\App\Http\Controllers\GozaichiPaymentController::class, 'receive'])->name('payments.receive');
+    Route::get('/payments/{id}/receipt', [\App\Http\Controllers\GozaichiPaymentController::class, 'receipt'])->name('payments.receipt');
+    Route::get('/payments/{id}/permit', [\App\Http\Controllers\GozaichiPaymentController::class, 'permit'])->name('payments.permit');
+
+    // 募集設定・イベント管理
+    Route::get('/settings', [\App\Http\Controllers\GozaichiSettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [\App\Http\Controllers\GozaichiSettingController::class, 'update'])->name('settings.update');
+});
+
 // 初期リダイレクト
 Route::get('/', function () {
     return redirect()->route('login');

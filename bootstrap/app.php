@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'approved' => \App\Http\Middleware\EnsureUserIsApproved::class,
             'admin' => \App\Http\Middleware\EnsureUserIsSystemAdmin::class,
+            'gozaichi' => \App\Http\Middleware\EnsureUserIsKanjiOrAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
