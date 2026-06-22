@@ -63,6 +63,14 @@ class GozaichiApplication extends Model
     }
 
     /**
+     * 地図上の配置マーカー情報を取得 (hasOne)
+     */
+    public function mapMarker(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(GozaichiMapMarker::class, 'application_id');
+    }
+
+    /**
      * 料金の自動計算および保存
      */
     public function calculateFees(): void

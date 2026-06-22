@@ -92,6 +92,20 @@ Route::middleware(['auth', 'approved', 'admin'])->prefix('admin')->name('admin.'
     Route::post('/users/transition', [AdminController::class, 'executeTransition'])->name('users.transition-execute');
 });
 
+// --- ござ市地図閲覧・出力ルート（一般会員・幹事・管理者共通） ---
+Route::middleware(['auth', 'approved'])->prefix('goza/map')->name('goza.map.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\GozaichiMapController::class, 'index'])->name('index');
+    Route::get('/markers', [\App\Http\Controllers\GozaichiMapController::class, 'getMarkers'])->name('markers');
+    Route::get('/pdf', [\App\Http\Controllers\GozaichiMapController::class, 'exportPdf'])->name('pdf');
+
+    // 地図編集API (幹事・管理者のみ)
+    Route::middleware('gozaichi')->group(function () {
+        Route::post('/markers', [\App\Http\Controllers\GozaichiMapController::class, 'storeMarker'])->name('storeMarker');
+        Route::put('/markers/{id}', [\App\Http\Controllers\GozaichiMapController::class, 'updateMarker'])->name('updateMarker');
+        Route::delete('/markers/{id}', [\App\Http\Controllers\GozaichiMapController::class, 'deleteMarker'])->name('deleteMarker');
+    });
+});
+
 // --- ござ市管理ルート（幹事・管理者共通） ---
 Route::middleware(['auth', 'approved', 'gozaichi'])->prefix('goza')->name('goza.')->group(function () {
     // ダッシュボード

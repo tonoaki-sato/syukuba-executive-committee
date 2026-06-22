@@ -150,6 +150,7 @@
                             <li><a class="dropdown-item {{ Route::is('goza.applications.*') ? 'active' : '' }}" href="{{ route('goza.applications.index') }}">出店応募管理</a></li>
                             <li><a class="dropdown-item {{ Route::is('goza.spots.*') ? 'active' : '' }}" href="{{ route('goza.spots.index') }}">出店場所配置</a></li>
                             <li><a class="dropdown-item {{ Route::is('goza.payments.*') ? 'active' : '' }}" href="{{ route('goza.payments.index') }}">当日集金・受領</a></li>
+                            <li><a class="dropdown-item {{ Route::is('goza.map.index') ? 'active' : '' }}" href="{{ route('goza.map.index') }}">出店場所地図配置</a></li>
                             @if(Auth::user()->isSystemAdmin())
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item {{ Route::is('goza.settings.*') ? 'active' : '' }}" href="{{ route('goza.settings.index') }}">募集設定・料金マスタ</a></li>
