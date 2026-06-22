@@ -9,15 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class GozaichiSettingController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(function ($request, $next) {
-            if (!Auth::user()->isSystemAdmin()) {
-                abort(403, '募集設定の変更はシステム管理者のみ可能です。');
-            }
-            return $next($request);
-        });
-    }
+
 
     protected function getOrCreateActiveEvent()
     {

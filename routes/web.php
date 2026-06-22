@@ -117,8 +117,8 @@ Route::middleware(['auth', 'approved', 'gozaichi'])->prefix('goza')->name('goza.
     Route::get('/payments/{id}/permit', [\App\Http\Controllers\GozaichiPaymentController::class, 'permit'])->name('payments.permit');
 
     // 募集設定・イベント管理
-    Route::get('/settings', [\App\Http\Controllers\GozaichiSettingController::class, 'index'])->name('settings.index');
-    Route::put('/settings', [\App\Http\Controllers\GozaichiSettingController::class, 'update'])->name('settings.update');
+    Route::get('/settings', [\App\Http\Controllers\GozaichiSettingController::class, 'index'])->name('settings.index')->middleware('admin');
+    Route::put('/settings', [\App\Http\Controllers\GozaichiSettingController::class, 'update'])->name('settings.update')->middleware('admin');
 });
 
 // 初期リダイレクト
