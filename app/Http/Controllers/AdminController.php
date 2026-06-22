@@ -242,4 +242,201 @@ class AdminController extends Controller
         return redirect()->route('admin.users.index')
             ->with('status', '移行処理が正常に完了し、年度を ' . $targetYear . ' 年度に切り替えました。');
     }
+
+    /**
+     * ユーザー直接追加フォームの表示
+     */
+    public function createUser()
+    {
+        // 紹介者候補としてアクティブなユーザー一覧を取得
+        $activeUsers = User::where('status', 'active')
+            ->orderBy('name_kana')
+            ->get();
+
+        return view('admin.users_create', compact('activeUsers'));
+    }
+
+    /**
+     * 新規ユーザーの直接追加実行
+     */
+    public function storeUser(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:50'],
+            'name_kana' => ['required', 'string', 'max:100', 'regex:/^[ぁ-んー ]+$/u'], // ひらがなのみ
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:comittee_users,email'],
+            'password' => $request->boolean('auto_generate_password') 
+                ? ['nullable'] 
+                : ['required', 'string', 'min:8', 'confirmed'],
+            'profession' => ['required', 'string', 'max:100'],
+            'affiliation' => ['nullable', 'string', 'max:100'],
+            'skills' => ['nullable', 'array'],
+            'referrer_id' => ['nullable', 'exists:comittee_users,id'],
+            'referrer_text' => ['nullable', 'string', 'max:100'],
+            'line_display_name' => ['required', 'string', 'max:100'],
+            'roles' => ['required', 'array'],
+            'roles.*' => ['in:general,kanji,admin'],
+        ], [
+            'name_kana.regex' => '氏名（かな）はひらがなで入力してください。',
+        ]);
+
+        // パスワード自動生成判定
+        $rawPassword = $request->boolean('auto_generate_password') 
+            ? Str::random(12) 
+            : $request->input('password');
+
+        $result = \DB::transaction(function() use ($request, $rawPassword) {
+            $user = new User();
+            $user->name = $request->input('name');
+            $user->name_kana = $request->input('name_kana');
+            $user->email = $request->input('email');
+            $user->password = \Hash::make($rawPassword);
+            $user->profession = $request->input('profession');
+            $user->affiliation = $request->input('affiliation');
+            $user->skills = $request->input('skills', []);
+            $user->roles = $request->input('roles');
+            $user->referrer_id = $request->input('referrer_id');
+            $user->referrer_text = $request->input('referrer_text');
+            $user->line_display_name = $request->input('line_display_name');
+            $user->status = 'active';
+            $user->approved_by = Auth::id();
+            $user->approved_at = now();
+            $user->save();
+
+            // 在籍レコードの作成
+            $activeYear = session('active_fiscal_year', date('Y'));
+            \App\Models\UserYear::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'fiscal_year' => $activeYear,
+                ],
+                [
+                    'roles' => $request->input('roles'),
+                    'status' => 'active',
+                ]
+            );
+
+            // パスキー設定用の一時セッション（24時間有効なワンタイムトークン）を発行
+            $token = Str::random(64);
+            PasskeySession::create([
+                'user_id' => $user->id,
+                'token' => $token,
+                'expires_at' => now()->addHours(24),
+            ]);
+
+            return ['user' => $user, 'token' => $token];
+        });
+
+        $registerUrl = route('passkey.register', ['token' => $result['token']]);
+
+        // 登録完了通知（メール代わりにログに出力）
+        Log::info("=== ユーザー直接追加登録通知メール ===");
+        Log::info("To: {$result['user']->email}");
+        Log::info("Subject: 【重要】保土ケ谷宿場まつり実行委員会 アカウント作成のお知らせ");
+        Log::info("Body: ");
+        Log::info("{$result['user']->name} 様\n");
+        Log::info("管理者によって実行委員会システムのアカウントが作成されました。");
+        Log::info("初期パスワード: {$rawPassword}");
+        Log::info("以下のURLより、24時間以内にログイン用パスキー（指紋・顔認証）の設定を行ってください。");
+        Log::info("パスキー設定URL: {$registerUrl}");
+        Log::info("======================================");
+
+        return redirect()->route('admin.users.index')
+            ->with('status', 'ユーザーを追加しました。一時パスワードとパスキー追加URLを対象者に共有してください。')
+            ->with('register_url', $registerUrl)
+            ->with('session_user_name', $result['user']->name)
+            ->with('temporary_password', $rawPassword);
+    }
+
+    /**
+     * 管理者による他ユーザーのパスワード変更実行
+     */
+    public function updateUserPassword(Request $request, User $user)
+    {
+        // 自分自身のパスワード変更はここでは禁止 (MyPageから行うように制御)
+        if ($user->id === Auth::id()) {
+            return back()->with('error', '自分自身のパスワードはマイページから変更してください。');
+        }
+
+        $request->validate([
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user->password = \Hash::make($request->input('password'));
+        $user->save();
+
+        Log::info("管理者 (ID: " . Auth::id() . ") がユーザー " . $user->name . " (ID: " . $user->id . ") のパスワードを強制リセットしました。");
+
+        return back()->with('status', 'ユーザーのパスワードを正常に更新しました。');
+    }
+
+    /**
+     * 管理者用ユーザー編集画面表示
+     */
+    public function editUser(User $user)
+    {
+        // 紹介者候補としてアクティブなユーザー一覧を取得 (自分自身は除く)
+        $activeUsers = User::where('status', 'active')
+            ->where('id', '!=', $user->id)
+            ->orderBy('name_kana')
+            ->get();
+
+        return view('admin.users_edit', compact('user', 'activeUsers'));
+    }
+
+    /**
+     * 管理者用ユーザー編集処理
+     */
+    public function updateUser(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:50'],
+            'name_kana' => ['required', 'string', 'max:100', 'regex:/^[ぁ-んー\s]+$/u'], // ひらがなとスペースのみ
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:comittee_users,email,' . $user->id],
+            'profession' => ['required', 'string', 'max:100'],
+            'affiliation' => ['nullable', 'string', 'max:100'],
+            'skills' => ['nullable', 'array'],
+            'referrer_id' => ['nullable', 'exists:comittee_users,id'],
+            'referrer_text' => ['nullable', 'string', 'max:100'],
+            'line_display_name' => ['required', 'string', 'max:100'],
+            'roles' => ['required', 'array'],
+            'roles.*' => ['in:general,kanji,admin'],
+            'status' => ['required', 'in:temporary,active,suspended,expelled,rejected'],
+        ], [
+            'name_kana.regex' => '氏名（かな）はひらがなで入力してください。',
+            'email.unique' => 'このメールアドレスは既に他のユーザーに使用されています。',
+        ]);
+
+        \DB::transaction(function() use ($request, $user) {
+            $user->name = $request->input('name');
+            $user->name_kana = $request->input('name_kana');
+            $user->email = $request->input('email');
+            $user->profession = $request->input('profession');
+            $user->affiliation = $request->input('affiliation');
+            $user->skills = $request->input('skills', []);
+            $user->roles = $request->input('roles');
+            $user->referrer_id = $request->input('referrer_id');
+            $user->referrer_text = $request->input('referrer_id') ? null : $request->input('referrer_text');
+            $user->line_display_name = $request->input('line_display_name');
+            $user->status = $request->input('status');
+            $user->save();
+
+            // 当年度の在籍レコード (UserYear) のロールとステータスも連動更新
+            $activeYear = session('active_fiscal_year', date('Y'));
+            \App\Models\UserYear::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'fiscal_year' => $activeYear,
+                ],
+                [
+                    'roles' => $request->input('roles'),
+                    'status' => $request->input('status'),
+                ]
+            );
+        });
+
+        Log::info("管理者 (ID: " . Auth::id() . ") がユーザー " . $user->name . " (ID: " . $user->id . ") の情報を更新しました。");
+
+        return redirect()->route('users.show', $user)->with('status', '会員情報を更新しました。');
+    }
 }

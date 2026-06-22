@@ -37,6 +37,8 @@ Route::middleware(['auth', 'approved'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'showDashboard'])->name('dashboard');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/mypage', [AuthController::class, 'showMyPage'])->name('mypage');
+    Route::get('/mypage/edit', [AuthController::class, 'editMyPage'])->name('mypage.edit');
+    Route::put('/mypage', [AuthController::class, 'updateMyPage'])->name('mypage.update');
     Route::post('/mypage/password', [AuthController::class, 'postPassword'])->name('mypage.password');
     Route::get('/users/{user}', [AuthController::class, 'showUserDetail'])->name('users.show');
 
@@ -76,8 +78,13 @@ Route::middleware(['auth', 'approved', 'admin'])->prefix('admin')->name('admin.'
 
     // 正式会員・パスキー管理
     Route::get('/users', [AdminController::class, 'users'])->name('users.index');
+    Route::get('/users/create', [AdminController::class, 'createUser'])->name('users.create');
+    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
     Route::post('/users/{user}/passkey-session', [AdminController::class, 'createPasskeySession'])->name('users.passkey-session');
+    Route::post('/users/{user}/password', [AdminController::class, 'updateUserPassword'])->name('users.password-update');
     Route::delete('/users/{user}/passkey/{key}', [AdminController::class, 'deletePasskey'])->name('users.passkey-delete');
+    Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('users.edit');
+    Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
     Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
     
     // 新年度への移行・引き継ぎ

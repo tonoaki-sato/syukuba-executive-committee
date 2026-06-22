@@ -214,4 +214,46 @@ class AuthController extends Controller
 
         return view('auth.user_detail', compact('user', 'userYears'));
     }
+
+    /**
+     * マイページ編集画面表示
+     */
+    public function editMyPage()
+    {
+        $user = Auth::user();
+        return view('auth.mypage_edit', compact('user'));
+    }
+
+    /**
+     * マイページ編集処理
+     */
+    public function updateMyPage(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:50'],
+            'name_kana' => ['required', 'string', 'max:100', 'regex:/^[ぁ-んー\s]+$/u'], // ひらがなとスペースのみ
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:comittee_users,email,' . $user->id],
+            'profession' => ['required', 'string', 'max:100'],
+            'affiliation' => ['nullable', 'string', 'max:100'],
+            'skills' => ['nullable', 'array'],
+            'line_display_name' => ['required', 'string', 'max:100'],
+        ], [
+            'name_kana.regex' => '氏名（かな）はひらがなで入力してください。',
+            'email.unique' => 'このメールアドレスは既に他のユーザーに使用されています。',
+        ]);
+
+        $user->update([
+            'name' => $request->input('name'),
+            'name_kana' => $request->input('name_kana'),
+            'email' => $request->input('email'),
+            'profession' => $request->input('profession'),
+            'affiliation' => $request->input('affiliation'),
+            'skills' => $request->input('skills', []),
+            'line_display_name' => $request->input('line_display_name'),
+        ]);
+
+        return redirect()->route('mypage')->with('status', 'プロフィールを更新しました。');
+    }
 }

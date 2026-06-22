@@ -13,7 +13,10 @@
                 <div class="card p-4 shadow-sm border-0 h-100">
                     <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
                         <h5 class="fw-bold text-secondary-color mb-0">👤 アカウント情報</h5>
-                        <a href="{{ route('users.show', $user) }}" class="btn btn-outline-primary btn-sm">詳細プロフィールを表示</a>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('mypage.edit') }}" class="btn btn-outline-secondary btn-sm">プロフィールを編集する</a>
+                            <a href="{{ route('users.show', $user) }}" class="btn btn-outline-primary btn-sm">詳細表示</a>
+                        </div>
                     </div>
                     
                     <table class="table table-borderless align-middle">

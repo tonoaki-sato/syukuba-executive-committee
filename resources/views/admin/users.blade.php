@@ -7,31 +7,48 @@
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-2">
             <h3 class="fw-bold text-dark mb-0">会員名簿 ＆ パスキー（生体認証）管理</h3>
-            <a href="{{ route('admin.users.transition') }}" class="btn btn-outline-primary py-2 px-3 fw-semibold">
-                🔄 新年度への移行・引き継ぎ
-            </a>
+            <div class="d-flex gap-2">
+                <a href="{{ route('admin.users.create') }}" class="btn btn-primary py-2 px-3 fw-semibold">
+                    ➕ 新規会員を直接追加
+                </a>
+                <a href="{{ route('admin.users.transition') }}" class="btn btn-outline-primary py-2 px-3 fw-semibold">
+                    🔄 新年度への移行・引き継ぎ
+                </a>
+            </div>
         </div>
         <p class="text-muted small mb-4">実行委員会に登録されている正式会員の一覧、紹介関係、およびログイン用パスキーの管理を行います。パスキーの紛失対策や追加デバイス登録はここから制御します。</p>
 
-        <!-- パスキー再発行時のワンタイム登録URL表示エリア -->
+        <!-- パスキー再発行・新規直接追加時のワンタイム登録URLおよび初期情報表示エリア -->
         @if(session('register_url'))
             <div class="card border-primary border-2 shadow-sm mb-4">
                 <div class="card-header bg-primary text-white py-3 fw-bold">
-                    🔑 会員「{{ session('session_user_name') }}」のパスキー追加登録セッションを発行しました
+                    @if(session('temporary_password'))
+                        ➕ 会員「{{ session('session_user_name') }}」を直接追加しました
+                    @else
+                        🔑 会員「{{ session('session_user_name') }}」のパスキー追加登録セッションを発行しました
+                    @endif
                 </div>
                 <div class="card-body">
-                    <p class="small text-dark fw-semibold mb-2">追加デバイス登録用のワンタイムURLです：</p>
+                    @if(session('temporary_password'))
+                        <div class="alert alert-success py-2.5 mb-3 small" role="alert">
+                            <strong>🔑 初期ログイン用パスワード：</strong>
+                            <code class="fs-6 fw-bold px-2 py-1 bg-light border rounded text-danger">{{ session('temporary_password') }}</code>
+                            <span class="ms-2 text-muted">※一度画面を閉じると再表示できません。必ず控えてください。</span>
+                        </div>
+                    @endif
+
+                    <p class="small text-dark fw-semibold mb-2">ログインおよびパスキー設定用のワンタイムURLです：</p>
                     
                     <div class="input-group mb-3">
                         <input type="text" id="admin-copy-url" class="form-control text-primary-emphasis border-primary bg-light" 
                                value="{{ session('register_url') }}" readonly>
-                        <button class="btn btn-primary" type="button" id="btn-admin-copy-url">
+                        <button class="btn btn-success" type="button" id="btn-admin-copy-url">
                             📋 URLをコピー
                         </button>
                     </div>
                     
                     <div class="alert alert-warning py-2 mb-0 small" role="alert">
-                        <strong>⚠️ 注意:</strong> この登録用URLは<strong>有効期限は24時間</strong>です。追加登録を行いたいユーザーへ直接共有し、新しいデバイスで指紋・顔認証を設定するよう案内してください。
+                        <strong>⚠️ 注意:</strong> この登録用URLは<strong>有効期限は24時間</strong>です。ログインおよび追加登録を行いたいユーザーへ直接共有し、新しいデバイスで指紋・顔認証を設定するよう案内してください。
                     </div>
                 </div>
             </div>

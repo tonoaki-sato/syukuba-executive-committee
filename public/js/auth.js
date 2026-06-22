@@ -341,4 +341,29 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 2000);
         });
     }
+
+    // 5. 新規会員直接追加画面でのパスワード自動生成切り替え
+    const autoGenerateCheckbox = document.getElementById('auto_generate_password');
+    const passwordFieldsContainer = document.getElementById('password-fields-container');
+    if (autoGenerateCheckbox && passwordFieldsContainer) {
+        const togglePasswordFields = () => {
+            const passwordInputs = passwordFieldsContainer.querySelectorAll('input');
+            if (autoGenerateCheckbox.checked) {
+                passwordFieldsContainer.classList.add('d-none');
+                passwordInputs.forEach(input => {
+                    input.removeAttribute('required');
+                    input.value = '';
+                });
+            } else {
+                passwordFieldsContainer.classList.remove('d-none');
+                passwordInputs.forEach(input => {
+                    input.setAttribute('required', 'required');
+                });
+            }
+        };
+        
+        autoGenerateCheckbox.addEventListener('change', togglePasswordFields);
+        // 初期起動時に状態を同期
+        togglePasswordFields();
+    }
 });
