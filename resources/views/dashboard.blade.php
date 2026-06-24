@@ -146,13 +146,17 @@
             
             <div class="row row-cols-2 row-cols-md-4 g-3">
                 <div class="col">
-                    <div class="p-3 border rounded text-center h-100 d-flex flex-column justify-content-between bg-light-subtle opacity-75">
+                    <div class="p-3 border rounded text-center h-100 d-flex flex-column justify-content-between">
                         <div>
                             <span class="fs-3 d-block mb-1">🏮</span>
                             <span class="fw-bold small d-block text-dark">ござ市管理</span>
                             <span class="text-muted" style="font-size: 0.75em;">出店者・区画・出店料</span>
                         </div>
-                        <span class="badge bg-secondary-subtle text-secondary btn-sm mt-3">準備中</span>
+                        @if(Auth::user()->isSystemAdmin() || Auth::user()->isKanji())
+                            <a href="{{ route('goza.index') }}" class="btn btn-primary btn-sm mt-3">管理画面</a>
+                        @else
+                            <a href="{{ route('goza.map.index') }}" class="btn btn-outline-primary btn-sm mt-3">地図閲覧</a>
+                        @endif
                     </div>
                 </div>
                 <div class="col">

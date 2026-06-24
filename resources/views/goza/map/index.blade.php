@@ -2,17 +2,29 @@
 
 @section('title', '出店場所地図配置')
 
+@php
+    $mapVersionFile = public_path('images/map_base_version.txt');
+    $mapVersion = file_exists($mapVersionFile) ? trim(file_get_contents($mapVersionFile)) : time();
+@endphp
+
 @section('content')
+
 <div class="mb-3 d-flex justify-content-between align-items-center">
     <div>
         <h3 class="fw-bold text-dark mb-1">出店場所地図配置</h3>
         <p class="text-muted small">会場マップ上での出店ブース・付帯設備・給水設備等の配置調整</p>
     </div>
-    <div>
+    <div class="d-flex gap-2">
+        @if(auth()->user()->isSystemAdmin())
+            <button type="button" class="btn btn-dark d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#uploadMapModal">
+                🗺️ ベースマップ差し替え(PDF)
+            </button>
+        @endif
         <a href="{{ route('goza.map.pdf') }}" target="_blank" class="btn btn-outline-dark d-flex align-items-center">
             🖨️ 配置図PDFプレビュー
         </a>
     </div>
+
 </div>
 
 <div class="row g-4">
@@ -145,13 +157,16 @@
     <div class="col-lg-9">
         <div class="card border-0 shadow-sm">
             <div class="card-body p-2 position-relative bg-white" style="overflow-x: auto;">
-                <div id="mapWrapper" class="position-relative border mx-auto" style="width: 800px; height: 1130px; background-image: url('{{ asset('images/map_base.png') }}'); background-size: 100% 100%; background-repeat: no-repeat; user-select: none;">
+                <div id="mapWrapper" class="position-relative border mx-auto" style="width: 800px; height: 1130px; background-image: url('{{ asset('images/map_base.png') }}?v={{ $mapVersion }}'); background-size: 100% 100%; background-repeat: no-repeat; user-select: none;">
+
                     
                     <!-- スナップガイド線などのオーバーレイ表示 -->
                     <svg width="800" height="1130" viewBox="0 0 800 1130" xmlns="http://www.w3.org/2000/svg" class="position-absolute top-0 start-0 w-100 h-100" style="pointer-events: none; z-index: 1;">
                         <!-- スナップガイド線 (JSで吸い付き判定を行う基準線、デバッグ用に点線で薄く描画) -->
-                        <line x1="365" y1="0" x2="365" y2="1130" stroke="#8c1d30" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
-                        <line x1="435" y1="0" x2="435" y2="1130" stroke="#8c1d30" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
+                        <line x1="240" y1="0" x2="240" y2="1130" stroke="#8c1d30" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
+                        <line x1="284" y1="0" x2="284" y2="1130" stroke="#8c1d30" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
+                        <line x1="602" y1="0" x2="602" y2="1130" stroke="#8c1d30" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
+                        <line x1="646" y1="0" x2="646" y2="1130" stroke="#8c1d30" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
                     </svg>
 
                     <!-- SVGカバー円（保健所の給水カバー、注意警告の範囲）の動的表示用レイヤー -->
@@ -326,41 +341,53 @@
         });
 
         // --- 吸い付き（スナップ）計算ロジック ---
-        // 道路に沿ったガイドライン（X座標365、または435付近）に吸い付ける
+        // 道路沿い（左通りの左右、右通りの左右の4ライン）に吸い付ける
         function applySnap(x, y) {
-            // 地図の画像サイズにおける道路沿いのライン比率
-            const leftGuidePercent = (365 / 800) * 100; // 約45.6%
-            const rightGuidePercent = (435 / 800) * 100; // 約54.3%
-            const snapThreshold = 3.5; // 吸い付く閾値（約3%以内）
+            const guides = [
+                (240 / 800) * 100, // 左通り・左列 (30.0%)
+                (284 / 800) * 100, // 左通り・右列 (35.5%)
+                (602 / 800) * 100, // 右通り・左列 (75.25%)
+                (646 / 800) * 100  // 右通り・右列 (80.75%)
+            ];
+            const snapThreshold = 3.5; // 吸い付く閾値（約3.5%以内）
 
             let targetX = x;
-            
-            if (Math.abs(x - leftGuidePercent) < snapThreshold) {
-                targetX = leftGuidePercent;
-            } else if (Math.abs(x - rightGuidePercent) < snapThreshold) {
-                targetX = rightGuidePercent;
-            }
+            let minDiff = Infinity;
+
+            guides.forEach(guide => {
+                const diff = Math.abs(x - guide);
+                if (diff < snapThreshold && diff < minDiff) {
+                    minDiff = diff;
+                    targetX = guide;
+                }
+            });
 
             return { x: targetX, y: y };
         }
 
         // --- マーカーデータ保存API送信 ---
         function saveMarker(data) {
-            fetch("{{ route('goza.map.storeMarker') }}", {
+            fetch("/goza/map/markers", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify(data)
             })
-            .then(res => {
+            .then(async res => {
                 if (res.status === 201) {
-                    // 保存成功したらリロードまたは非同期再取得
+                    // 保存成功したらリロード
                     location.reload(); 
                 } else {
-                    alert('マーカーの配置に失敗しました。');
+                    const err = await res.json();
+                    throw new Error(err.message || '配置に失敗しました。');
                 }
+            })
+            .catch(err => {
+                console.error(err);
+                alert(err.message || 'マーカーの配置に失敗しました。');
             });
         }
 
@@ -460,17 +487,28 @@
         }
 
         function updateMarkerCoords(id, x, y) {
-            fetch(`{{ url('/goza/map/markers') }}/${id}`, {
+            fetch(`/goza/map/markers/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({ x_position: x, y_position: y })
             })
-            .then(res => res.json())
+            .then(async res => {
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.message || '移動に失敗しました。');
+                }
+                return res.json();
+            })
             .then(() => {
                 loadMarkers(); // 位置を再ロード
+            })
+            .catch(err => {
+                console.error(err);
+                alert(err.message || 'マーカーの移動に失敗しました。');
             });
         }
 
@@ -587,38 +625,63 @@
             const name = document.getElementById('modal-marker-name').value;
             const desc = document.getElementById('modal-marker-description').value;
 
-            fetch(`{{ url('/goza/map/markers') }}/${id}`, {
+            fetch(`/goza/map/markers/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({ name: name, description: desc, x_position: activeMarkers.find(x => x.id == id).x_position, y_position: activeMarkers.find(x => x.id == id).y_position })
             })
-            .then(res => res.json())
+            .then(async res => {
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.message || '更新に失敗しました。');
+                }
+                return res.json();
+            })
             .then(() => {
                 markerModal.hide();
                 loadMarkers();
+            })
+            .catch(err => {
+                console.error(err);
+                alert(err.message || 'マーカーの更新に失敗しました。');
             });
         });
 
         // マーカー削除
-        document.getElementById('deleteMarkerBtn').addEventListener('click', function() {
-            if (!canEdit || !confirm('この配置オブジェクトを削除しますか？')) return;
-            const id = document.getElementById('modal-marker-id').value;
+        const deleteMarkerBtn = document.getElementById('deleteMarkerBtn');
+        if (deleteMarkerBtn) {
+            deleteMarkerBtn.addEventListener('click', function() {
+                if (!canEdit || !confirm('この配置オブジェクトを削除しますか？')) return;
+                const id = document.getElementById('modal-marker-id').value;
 
-            fetch(`{{ url('/goza/map/markers') }}/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(res => res.json())
-            .then(() => {
-                markerModal.hide();
-                location.reload(); // リロードして未配置リストに戻す
+                fetch(`/goza/map/markers/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(async res => {
+                    if (!res.ok) {
+                        const err = await res.json();
+                        throw new Error(err.message || '削除に失敗しました。');
+                    }
+                    return res.json();
+                })
+                .then(() => {
+                    markerModal.hide();
+                    location.reload(); // リロードして未配置リストに戻す
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert(err.message || 'マーカーの削除に失敗しました。');
+                });
             });
-        });
+        }
 
         // レイヤー切り替えトグルの監視
         ['layer-gozaichi', 'layer-facility', 'layer-water', 'layer-claim'].forEach(id => {
@@ -630,6 +693,99 @@
 
         // 初回ロード
         loadMarkers();
+
+        // --- ベースマップPDFアップロード処理 (管理者限定) ---
+        const uploadMapForm = document.getElementById('uploadMapForm');
+        if (uploadMapForm) {
+            const submitUploadBtn = document.getElementById('submitUploadBtn');
+            const cancelUploadBtn = document.getElementById('cancelUploadBtn');
+            const uploadProgress = document.getElementById('uploadProgress');
+            const uploadError = document.getElementById('uploadError');
+
+            uploadMapForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(uploadMapForm);
+                
+                // UI表示のロック
+                submitUploadBtn.setAttribute('disabled', 'disabled');
+                cancelUploadBtn.setAttribute('disabled', 'disabled');
+                uploadProgress.classList.remove('d-none');
+                uploadError.classList.add('d-none');
+
+                fetch('{{ route('admin.map.uploadBase') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(async res => {
+                    const data = await res.json();
+                    if (!res.ok) {
+                        throw new Error(data.error || 'アップロードまたは画像変換に失敗しました。');
+                    }
+                    return data;
+                })
+                .then(data => {
+                    // 成功時
+                    alert('ベースマップの差し替えに成功しました。');
+                    window.location.reload();
+                })
+                .catch(err => {
+                    console.error(err);
+                    uploadError.textContent = err.message;
+                    uploadError.classList.remove('d-none');
+                })
+                .finally(() => {
+                    submitUploadBtn.removeAttribute('disabled');
+                    cancelUploadBtn.removeAttribute('disabled');
+                    uploadProgress.classList.add('d-none');
+                });
+            });
+        }
     });
 </script>
+
+<!-- ベースマップ差し替え用モーダル (管理者のみ) -->
+@if(auth()->user()->isSystemAdmin())
+<div class="modal fade" id="uploadMapModal" tabindex="-1" aria-labelledby="uploadMapModalLabel" aria-hidden="true" style="z-index: 9999;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="uploadMapModalLabel">ベースマップPDFの差し替え</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="uploadMapForm" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <div class="alert alert-warning py-2 px-3 small">
+                        ⚠️ <strong>重要:</strong> 最新の配置用平面図PDFをアップロードしてください。アップロード後に高解像度画像（PNG）へ自動変換され、地図の背景画像が差し替わります。
+                    </div>
+                    <div class="mb-3">
+                        <label for="map_pdf" class="form-label fw-bold small">平面図PDFファイル (最大10MB)</label>
+                        <input type="file" class="form-control" id="map_pdf" name="map_pdf" accept="application/pdf" required>
+                        <div class="form-text text-muted" style="font-size: 0.75rem;">※.pdf 形式のみ対応しています。変換には数秒かかります。</div>
+                    </div>
+                    
+                    <!-- 進行中表示 -->
+                    <div id="uploadProgress" class="d-none text-center py-3">
+                        <div class="spinner-border text-primary mb-2" role="status"></div>
+                        <div class="small fw-bold text-primary">PDFを画像に変換中...</div>
+                        <div class="text-muted small">この処理には数秒かかります。画面を閉じずにお待ちください。</div>
+                    </div>
+                    
+                    <!-- エラーメッセージ表示 -->
+                    <div id="uploadError" class="alert alert-danger d-none py-2 px-3 small mt-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelUploadBtn">キャンセル</button>
+                    <button type="submit" class="btn btn-primary" id="submitUploadBtn">アップロードして差し替え</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 @endsection

@@ -90,7 +90,11 @@ Route::middleware(['auth', 'approved', 'admin'])->prefix('admin')->name('admin.'
     // 新年度への移行・引き継ぎ
     Route::get('/users/transition', [AdminController::class, 'showTransitionForm'])->name('users.transition');
     Route::post('/users/transition', [AdminController::class, 'executeTransition'])->name('users.transition-execute');
+
+    // ベースマップPDFのアップロード・画像変換
+    Route::post('/map/upload-base', [\App\Http\Controllers\GozaichiMapController::class, 'uploadBaseMap'])->name('map.uploadBase');
 });
+
 
 // --- ござ市地図閲覧・出力ルート（一般会員・幹事・管理者共通） ---
 Route::middleware(['auth', 'approved'])->prefix('goza/map')->name('goza.map.')->group(function () {

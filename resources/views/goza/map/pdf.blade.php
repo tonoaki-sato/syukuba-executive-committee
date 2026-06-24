@@ -1,3 +1,7 @@
+@php
+    $mapVersionFile = public_path('images/map_base_version.txt');
+    $mapVersion = file_exists($mapVersionFile) ? trim(file_get_contents($mapVersionFile)) : time();
+@endphp
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -40,10 +44,11 @@
             position: relative;
             width: 800px;
             height: 1130px;
-            background-image: url('{{ asset('images/map_base.png') }}');
+            background-image: url('{{ asset('images/map_base.png') }}?v={{ $mapVersion }}');
             background-size: 100% 100%;
             background-repeat: no-repeat;
         }
+
         
         /* マップ上のピン */
         .map-pin {
@@ -158,8 +163,10 @@
         <!-- SVGベースマップ (indexと同様) -->
         <svg width="800" height="1130" viewBox="0 0 800 1130" xmlns="http://www.w3.org/2000/svg" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: 1;">
             <!-- スナップガイド線 (JSで吸い付き判定を行う基準線、デバッグ用に点線で薄く描画) -->
-            <line x1="365" y1="0" x2="365" y2="1130" stroke="#8c1d30" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
-            <line x1="435" y1="0" x2="435" y2="1130" stroke="#8c1d30" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
+            <line x1="240" y1="0" x2="240" y2="1130" stroke="#8c1d30" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
+            <line x1="284" y1="0" x2="284" y2="1130" stroke="#8c1d30" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
+            <line x1="602" y1="0" x2="602" y2="1130" stroke="#8c1d30" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
+            <line x1="646" y1="0" x2="646" y2="1130" stroke="#8c1d30" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
         </svg>
 
         <!-- 保健所の給水カバー円 (印刷プレビュー用) -->
