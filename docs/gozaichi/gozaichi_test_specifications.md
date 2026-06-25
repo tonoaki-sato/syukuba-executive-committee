@@ -1,6 +1,6 @@
 # 保土ケ谷宿場まつり実行委員会 実務管理総合システム ござ市管理機能 テスト仕様書
 
-本書は、ござ市管理機能仕様書（[gozaichi_specifications.md](file:///opt/project/syukuba-executive-committee/docs/gozaichi_specifications.md)）に基づき、ござ市管理機能を対象としたテストケースおよび検証手順を定義する。
+本書は、ござ市管理機能仕様書（[gozaichi_specifications.md](./gozaichi_specifications.md)）に基づき、ござ市管理機能を対象としたテストケースおよび検証手順を定義する。
 
 ---
 

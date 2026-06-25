@@ -1,6 +1,6 @@
 # 保土ケ谷宿場まつり実行委員会 実務管理総合システム 機能詳細設計書
 
-本書は、システム仕様書（[system_specifications.md](file:///opt/project/syukuba-executive-committee/docs/system_specifications.md)）に基づき、初期フェーズ（会員管理、会議体管理、認証、システム共通基盤）で実装する具体的な機能の詳細を定義する。
+本書は、システム仕様書（[system_specifications.md](./system_specifications.md)）に基づき、初期フェーズ（会員管理、会議体管理、認証、システム共通基盤）で実装する具体的な機能の詳細を定義する。
 
 ---
 

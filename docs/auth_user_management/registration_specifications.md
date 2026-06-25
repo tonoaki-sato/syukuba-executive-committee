@@ -1,6 +1,6 @@
 # 保土ケ谷宿場まつり実行委員会 実務管理総合システム ユーザー登録機能仕様書
 
-本書は、システム仕様書（[system_specifications.md](file:///opt/project/syukuba-executive-committee/docs/system_specifications.md)）および機能詳細設計書（[functional_details.md](file:///opt/project/syukuba-executive-committee/docs/functional_details.md)）に基づき、新規会員の「自主登録申請（仮登録）」から「システム管理者による承認」「正式会員への移行」までのフローおよび技術的な詳細仕様を定義する。
+本書は、システム仕様書（[system_specifications.md](../system_common/system_specifications.md)）および機能詳細設計書（[functional_details.md](../system_common/functional_details.md)）に基づき、新規会員の「自主登録申請（仮登録）」から「システム管理者による承認」「正式会員への移行」までのフローおよび技術的な詳細仕様を定義する。
 
 ---
 

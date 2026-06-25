@@ -1,6 +1,6 @@
 # 保土ケ谷宿場まつり実行委員会 実務管理総合システム 管理者用ユーザー直接追加機能 仕様書
 
-本書は、システム仕様書（[system_specifications.md](file:///opt/project/syukuba-executive-committee/docs/system_specifications.md)）および機能詳細設計書（[functional_details.md](file:///opt/project/syukuba-executive-committee/docs/functional_details.md)）に基づき、システム管理グループ（管理者）が直接新規ユーザー（会員）を登録する「管理者用ユーザー直接追加機能」の仕様を定義する。
+本書は、システム仕様書（[system_specifications.md](../system_common/system_specifications.md)）および機能詳細設計書（[functional_details.md](../system_common/functional_details.md)）に基づき、システム管理グループ（管理者）が直接新規ユーザー（会員）を登録する「管理者用ユーザー直接追加機能」の仕様を定義する。
 
 ---
 

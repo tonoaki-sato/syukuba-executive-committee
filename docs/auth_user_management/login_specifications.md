@@ -1,6 +1,6 @@
 # 保土ケ谷宿場まつり実行委員会 実務管理総合システム ログイン・パスキー認証仕様書
 
-本書は、システム仕様書（[system_specifications.md](file:///opt/project/syukuba-executive-committee/docs/system_specifications.md)）に基づき、パスキー（Passkey / WebAuthn）とパスワード認証を安全かつスムーズに併用するための認証フローおよびセキュリティ仕様を定義する。
+本書は、システム仕様書（[system_specifications.md](../system_common/system_specifications.md)）に基づき、パスキー（Passkey / WebAuthn）とパスワード認証を安全かつスムーズに併用するための認証フローおよびセキュリティ仕様を定義する。
 
 ---
 

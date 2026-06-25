@@ -1,6 +1,6 @@
 # 保土ケ谷宿場まつり実行委員会 実務管理総合システム メイン通り地図管理機能 仕様書
 
-本書は、システム仕様書（[system_specifications.md](file:///opt/project/syukuba-executive-committee/docs/system_specifications.md)）および「ござ市管理仕様書」（[gozaichi_specifications.md](file:///opt/project/syukuba-executive-committee/docs/gozaichi_specifications.md)）に基づき、イベント会場であるメイン通りのデジタル配置地図管理機能の要件・業務フロー・データモデル・画面設計の詳細を定義する。
+本書は、システム仕様書（[system_specifications.md](../system_common/system_specifications.md)）および「ござ市管理仕様書」（[gozaichi_specifications.md](../gozaichi/gozaichi_specifications.md)）に基づき、イベント会場であるメイン通りのデジタル配置地図管理機能の要件・業務フロー・データモデル・画面設計の詳細を定義する。
 
 ---
 
@@ -32,7 +32,7 @@
 ## 3. 地図画面の基本構成とレイヤー設計
 
 ### 3.1 背景（ベースマップ）
-- 大久保さん送付の配置図（[大久保さん送付0923-2.pdf](file:///opt/project/syukuba-executive-committee/docs/大久保さん送付0923-2.pdf)）を画像化したもの（PNGまたはSVG）を背景として重ね合わせて表示する。
+- 大久保さん送付の配置図（[大久保さん送付0923-2.pdf](./大久保さん送付0923-2.pdf)）を画像化したもの（PNGまたはSVG）を背景として重ね合わせて表示する。
 - 建物や道路などの物理配置は固定で動かない。
 - 地図画像はレスポンシブに対応させ、拡大・縮小（ズーム）およびドラッグ移動（パン）が可能とする。
 

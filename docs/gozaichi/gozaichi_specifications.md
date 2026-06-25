@@ -1,6 +1,6 @@
 # 保土ケ谷宿場まつり実行委員会 実務管理総合システム ござ市管理機能 仕様書
 
-本書は、システム仕様書（[system_specifications.md](file:///opt/project/syukuba-executive-committee/docs/system_specifications.md)）および機能詳細設計書（[functional_details.md](file:///opt/project/syukuba-executive-committee/docs/functional_details.md)）に基づき、「ござ市」の出店者管理機能の要件・業務フロー・データモデル・画面設計の詳細を定義する。
+本書は、システム仕様書（[system_specifications.md](../system_common/system_specifications.md)）および機能詳細設計書（[functional_details.md](../system_common/functional_details.md)）に基づき、「ござ市」の出店者管理機能の要件・業務フロー・データモデル・画面設計の詳細を定義する。
 
 本機能は、既存の独立システム（[syukuba-gozaichi specification.md](file:///opt/project/syukuba-gozaichi/specification.md)）の仕様を本実務管理総合システムに統合し、共通基盤（認証・年度管理・会員管理）と連携する形で再設計したものである。
 
@@ -343,7 +343,7 @@ graph TD
 | `updated_at` | Timestamp | Nullable | レコード更新日時 |
 
 > [!TIP]
-> 新年度のイベント作成時に、前年度の料金マスタを一括コピーすることで、基本設定の引き継ぎを容易にする設計とする。これは既存の年度引き継ぎ機能（[functional_details.md F3.2](file:///opt/project/syukuba-executive-committee/docs/functional_details.md)）の「その他データのコピー」に該当する。
+> 新年度のイベント作成時に、前年度の料金マスタを一括コピーすることで、基本設定の引き継ぎを容易にする設計とする。これは既存の年度引き継ぎ機能（[functional_details.md F3.2](../system_common/functional_details.md)）の「その他データのコピー」に該当する。
 
 ---
 
