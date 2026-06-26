@@ -35,6 +35,7 @@ Route::get('/register/pending', [AuthController::class, 'showPending'])->name('r
 Route::middleware(['auth', 'approved'])->group(function () {
     // ポータル・ログアウト・マイページ
     Route::get('/dashboard', [AuthController::class, 'showDashboard'])->name('dashboard');
+    Route::get('/safety', [\App\Http\Controllers\SafetyController::class, 'index'])->name('safety.index');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/mypage', [AuthController::class, 'showMyPage'])->name('mypage');
     Route::get('/mypage/edit', [AuthController::class, 'editMyPage'])->name('mypage.edit');

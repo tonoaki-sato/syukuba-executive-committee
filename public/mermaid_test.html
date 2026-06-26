@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Mermaid Test - Safety Diagrams</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <h3>Diagram 1: エリア・巡回動線配置図</h3>
+    <div class="mermaid">
+flowchart TD
+    subgraph MainStreet ["メイン通り（約300m・歩行者天国）"]
+        GateN["【北側ゲート（メイン通り北端）】<br>(外部警備会社)"]
+        Honjin["【本陣】<br>(統括拠点)"]
+        GateS["【南側ゲート（メイン通り南端）】<br>(外部警備会社)"]
+        
+        GateN -- "B班巡回" &lt;--&gt; Honjin
+        Honjin -- "A班巡回" &lt;--&gt; GateS
+    end
+    
+    Kids["【キッズ村】 小学校跡地<br>(C班が巡回警戒)"] -- "導線: 裏路地 約100m (C班往復巡回/車両通行あり)" &lt;--&gt; GateN
+
+    %% スタイル設定
+    style Honjin fill:#f8d7da,stroke:#f5c2c7,stroke-width:2px,color:#842029
+    style Kids fill:#cff4fc,stroke:#b6effb,stroke-width:2px,color:#055160
+    style GateN fill:#e2e3e5,stroke:#d3d3d4,stroke-width:2px,color:#41464b
+    style GateS fill:#e2e3e5,stroke:#d3d3d4,stroke-width:2px,color:#41464b
+    </div>
+
+    <h3>Diagram 2: 緊急時エスカレーションフロー</h3>
+    <div class="mermaid">
+flowchart TD
+    Honjin["【本陣】<br>(統括・情報集約)"] -- "連絡ツール (一斉通話)" &lt;--&gt; PatA["巡回A班<br>(メイン南)"]
+    Honjin -- "連絡ツール (一斉通話)" &lt;--&gt; PatB["巡回B班<br>(メイン北)"]
+    Honjin -- "連絡ツール (一斉通話)" &lt;--&gt; PatC["巡回C班<br>(キッズ・裏路地)"]
+    Honjin -- "連絡ツール (一斉通話)" &lt;--&gt; Aid["救護班<br>(救護所常駐)"]
+    
+    Honjin -- "ホットライン" &lt;--&gt; SecCompany["外部警備会社 現場責任者<br>(北側・南側ゲート窓口)"]
+    Honjin -- "緊急通報" &lt;--&gt; External["警察・消防・救急車"]
+
+    %% スタイル設定
+    style Honjin fill:#f8d7da,stroke:#f5c2c7,stroke-width:2px,color:#842029
+    style PatA fill:#d1e7dd,stroke:#badbcc,stroke-width:2px,color:#0f5132
+    style PatB fill:#d1e7dd,stroke:#badbcc,stroke-width:2px,color:#0f5132
+    style PatC fill:#cff4fc,stroke:#b6effb,stroke-width:2px,color:#055160
+    style Aid fill:#e2d9f3,stroke:#d2c4ec,stroke-width:2px,color:#563d7c
+    style External fill:#f8d7da,stroke:#f5c2c7,stroke-width:2px,color:#842029
+    </div>
+
+    <h3>Diagram 3: 避難指示発令時フロー</h3>
+    <div class="mermaid">
+flowchart TD
+    Honjin_Inst["【本陣】<br>避難指示・一斉放送"] --> PatA_Action["【巡回A班】<br>メイン南側を南側ゲート・側道へ誘導"]
+    Honjin_Inst --> PatB_Action["【巡回B班】<br>メイン北側を北側ゲートへ誘導"]
+    Honjin_Inst --> PatC_Action["【巡回C班】<br>キッズ村広場へ集約・安全確保"]
+    Honjin_Inst --> Gate_Action["【外部警備員（ゲート）】<br>バリケード撤去・通路完全開放"]
+    
+    %% スタイル設定
+    style Honjin_Inst fill:#f8d7da,stroke:#f5c2c7,stroke-width:2px,color:#842029
+    style PatA_Action fill:#d1e7dd,stroke:#badbcc,stroke-width:2px,color:#0f5132
+    style PatB_Action fill:#d1e7dd,stroke:#badbcc,stroke-width:2px,color:#0f5132
+    style PatC_Action fill:#cff4fc,stroke:#b6effb,stroke-width:2px,color:#055160
+    style Gate_Action fill:#e2e3e5,stroke:#d3d3d4,stroke-width:2px,color:#41464b
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+/* 安全管理モジュール用カスタムスタイル */
+
+.safety-header-card {
+    border-left: 5px solid var(--primary-color);
+    background-color: #ffffff;
+}
+
+.safety-tabs .nav-link {
+    color: var(--secondary-color);
+    font-weight: 500;
+    border: 1px solid transparent;
+    border-radius: 6px 6px 0 0;
+    margin-right: 4px;
+    background-color: rgba(28, 45, 55, 0.05);
+}
+
+.safety-tabs .nav-link:hover {
+    background-color: rgba(140, 29, 48, 0.05);
+    color: var(--primary-color);
+}
+
+.safety-tabs .nav-link.active {
+    background-color: #ffffff;
+    border-color: var(--border-color) var(--border-color) transparent;
+    color: var(--primary-color) !important;
+    font-weight: 700;
+}
+
+.badge-staff {
+    background-color: var(--secondary-color);
+    color: #ffffff;
+}
+
+.badge-route-c {
+    background-color: #0d47a1;
+    color: #ffffff;
+}
+
+.badge-route-a {
+    background-color: #006064;
+    color: #ffffff;
+}
+
+.badge-route-b {
+    background-color: #00838f;
+    color: #ffffff;
+}
+
+.manual-accordion .accordion-button:not(.collapsed) {
+    background-color: rgba(140, 29, 48, 0.05);
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.manual-accordion .accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(140, 29, 48, 0.15);
+    border-color: var(--primary-color);
+}
+
+.mermaid-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.manual-phone-box {
+    background-color: #f8f9fa;
+    border-left: 3px solid #6c757d;
+    padding: 0.75rem 1rem;
+    margin-top: 0.5rem;
+    border-radius: 0 4px 4px 0;
+}

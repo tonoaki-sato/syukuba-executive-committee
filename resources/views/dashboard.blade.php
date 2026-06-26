@@ -200,13 +200,13 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="p-3 border rounded text-center h-100 d-flex flex-column justify-content-between bg-light-subtle opacity-75">
+                    <div class="p-3 border rounded text-center h-100 d-flex flex-column justify-content-between">
                         <div>
                             <span class="fs-3 d-block mb-1">🚨</span>
                             <span class="fw-bold small d-block text-dark">安全管理</span>
                             <span class="text-muted" style="font-size: 0.75em;">警備計画・緊急連絡網</span>
                         </div>
-                        <span class="badge bg-secondary-subtle text-secondary btn-sm mt-3">準備中</span>
+                        <a href="{{ route('safety.index') }}" class="btn btn-outline-primary btn-sm mt-3">計画書閲覧</a>
                     </div>
                 </div>
                 <div class="col">
