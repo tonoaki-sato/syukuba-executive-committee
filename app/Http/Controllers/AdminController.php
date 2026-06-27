@@ -36,7 +36,7 @@ class AdminController extends Controller
 
         $request->validate([
             'roles' => ['required', 'array'],
-            'roles.*' => ['in:general,kanji,admin'],
+            'roles.*' => ['in:general,kanji,admin,equipment_manager'],
         ]);
 
         // 承認情報の記録とステータス更新
@@ -324,7 +324,7 @@ class AdminController extends Controller
             'referrer_text' => ['nullable', 'string', 'max:100'],
             'line_display_name' => ['required', 'string', 'max:100'],
             'roles' => ['required', 'array'],
-            'roles.*' => ['in:general,kanji,admin'],
+            'roles.*' => ['in:general,kanji,admin,equipment_manager'],
         ], [
             'name_kana.regex' => '氏名（かな）はひらがなで入力してください。',
         ]);
@@ -449,7 +449,7 @@ class AdminController extends Controller
             'referrer_text' => ['nullable', 'string', 'max:100'],
             'line_display_name' => ['required', 'string', 'max:100'],
             'roles' => ['required', 'array'],
-            'roles.*' => ['in:general,kanji,admin'],
+            'roles.*' => ['in:general,kanji,admin,equipment_manager'],
             'status' => ['required', 'in:temporary,active,suspended,expelled,rejected'],
         ], [
             'name_kana.regex' => '氏名（かな）はひらがなで入力してください。',

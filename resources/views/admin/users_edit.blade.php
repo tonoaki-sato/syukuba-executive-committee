@@ -116,6 +116,18 @@
                                 <label class="form-check-label" for="skill-office">事務処理・会計業務</label>
                             </div>
                         </div>
+                        <div class="col-md-4 col-6 mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="skills[]" value="IT・システム" id="skill-system" {{ in_array('IT・システム', old('skills', $userSkills)) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="skill-system">IT・システム</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6 mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="skills[]" value="雑用・その他" id="skill-others" {{ in_array('雑用・その他', old('skills', $userSkills)) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="skill-others">雑用・その他</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -148,7 +160,12 @@
                                 <input class="form-check-input" type="checkbox" name="roles[]" value="admin" id="role-admin" {{ in_array('admin', old('roles', $userRoles)) ? 'checked' : '' }}>
                                 <label class="form-check-label small text-danger fw-semibold" for="role-admin">システム管理</label>
                             </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="roles[]" value="equipment_manager" id="role-equipment" {{ in_array('equipment_manager', old('roles', $userRoles)) ? 'checked' : '' }}>
+                                <label class="form-check-label small text-primary fw-semibold" for="role-equipment">備品管理</label>
+                            </div>
                         </div>
+
                     </div>
                     
                     <div class="col-md-6 mb-3">

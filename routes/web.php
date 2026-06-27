@@ -140,7 +140,26 @@ Route::middleware(['auth', 'approved', 'gozaichi'])->prefix('goza')->name('goza.
     Route::put('/settings', [\App\Http\Controllers\GozaichiSettingController::class, 'update'])->name('settings.update')->middleware('admin');
 });
 
+// --- 備品管理ルート（一般会員・幹事・管理者共通：閲覧のみ） ---
+Route::middleware(['auth', 'approved'])->prefix('equipment')->name('equipment.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\EquipmentController::class, 'index'])->name('index');
+
+    // 登録・編集・削除などのCUD操作は備品管理者・幹事・管理者のみ
+    Route::middleware(['equipment.manage'])->group(function () {
+        Route::post('/master/store', [\App\Http\Controllers\EquipmentController::class, 'storeMaster'])->name('master.store');
+        Route::put('/master/update/{id}', [\App\Http\Controllers\EquipmentController::class, 'updateMaster'])->name('master.update');
+        Route::delete('/master/delete/{id}', [\App\Http\Controllers\EquipmentController::class, 'destroyMaster'])->name('master.destroy');
+        Route::post('/location/store', [\App\Http\Controllers\EquipmentController::class, 'storeLocation'])->name('location.store');
+        Route::post('/stock/adjust', [\App\Http\Controllers\EquipmentController::class, 'adjustStock'])->name('stock.adjust');
+        Route::post('/loan/store', [\App\Http\Controllers\EquipmentController::class, 'storeLoan'])->name('loan.store');
+        Route::put('/loan/update/{id}', [\App\Http\Controllers\EquipmentController::class, 'updateLoanStatus'])->name('loan.update');
+        Route::post('/maintenance/store', [\App\Http\Controllers\EquipmentController::class, 'storeMaintenance'])->name('maintenance.store');
+        Route::post('/copy-year', [\App\Http\Controllers\EquipmentController::class, 'copyFromPreviousYear'])->name('copy-year');
+    });
+});
+
 // 初期リダイレクト
 Route::get('/', function () {
     return redirect()->route('login');
 });
+

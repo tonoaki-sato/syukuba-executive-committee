@@ -167,4 +167,25 @@ class User extends Authenticatable
     {
         return $this->status === 'active' && $this->hasRole('general', $year);
     }
+
+    /**
+     * 備品管理者であるか判定
+     */
+    public function isEquipmentManager($year = null): bool
+    {
+        return $this->status === 'active' && $this->hasRole('equipment_manager', $year);
+    }
+
+    /**
+     * 備品の登録・編集・削除権限があるか判定
+     */
+    public function canManageEquipment($year = null): bool
+    {
+        return $this->status === 'active' && (
+            $this->isSystemAdmin() ||
+            $this->isKanji($year) ||
+            $this->isEquipmentManager($year)
+        );
+    }
 }
+

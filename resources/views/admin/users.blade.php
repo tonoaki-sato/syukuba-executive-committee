@@ -82,10 +82,14 @@
                                             @if($user->hasRole('kanji'))
                                                 <span class="badge badge-kanji badge-sm">幹事</span>
                                             @endif
+                                            @if($user->hasRole('equipment_manager'))
+                                                <span class="badge bg-primary badge-sm">備品管理</span>
+                                            @endif
                                             @if($user->hasRole('general'))
                                                 <span class="badge badge-general badge-sm">一般会員</span>
                                             @endif
                                         </div>
+
                                     </td>
                                     
                                     <!-- LINEアカウント -->

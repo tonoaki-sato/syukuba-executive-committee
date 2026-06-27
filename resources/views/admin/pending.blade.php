@@ -138,6 +138,12 @@
                                                                 システム管理 (新規会員の承認、パスキーの発行・無効化の最上位権限)
                                                             </label>
                                                         </div>
+                                                        <div class="form-check mb-2">
+                                                            <input class="form-check-input" type="checkbox" name="roles[]" value="equipment_manager" id="role-equipment-{{ $user->id }}" {{ $user->hasRole('equipment_manager') ? 'checked' : '' }}>
+                                                            <label class="form-check-label fw-bold text-primary" for="role-equipment-{{ $user->id }}">
+                                                                備品管理 (備品の登録・編集・削除、在庫調整・貸出管理の実行権限)
+                                                            </label>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">

@@ -132,6 +132,18 @@
                                 <label class="form-check-label" for="skill-office">事務処理・会計業務</label>
                             </div>
                         </div>
+                        <div class="col-md-4 col-6 mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="skills[]" value="IT・システム" id="skill-system" {{ is_array(old('skills')) && in_array('IT・システム', old('skills')) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="skill-system">IT・システム</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6 mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="skills[]" value="雑用・その他" id="skill-others" {{ is_array(old('skills')) && in_array('雑用・その他', old('skills')) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="skill-others">雑用・その他</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -159,7 +171,12 @@
                             <input class="form-check-input" type="checkbox" name="roles[]" value="admin" id="role-admin" {{ is_array(old('roles')) && in_array('admin', old('roles')) ? 'checked' : '' }}>
                             <label class="form-check-label small text-danger fw-semibold" for="role-admin">システム管理</label>
                         </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="roles[]" value="equipment_manager" id="role-equipment" {{ is_array(old('roles')) && in_array('equipment_manager', old('roles')) ? 'checked' : '' }}>
+                            <label class="form-check-label small text-primary fw-semibold" for="role-equipment">備品管理</label>
+                        </div>
                     </div>
+
                 </div>
 
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">

@@ -82,6 +82,8 @@
                                                         <span class="badge badge-admin badge-sm mb-1 d-block w-75 text-center">システム管理</span>
                                                     @elseif($role === 'kanji')
                                                         <span class="badge badge-kanji badge-sm mb-1 d-block w-75 text-center text-dark">幹事</span>
+                                                    @elseif($role === 'equipment_manager')
+                                                        <span class="badge bg-primary badge-sm mb-1 d-block w-75 text-center">備品管理</span>
                                                     @else
                                                         <span class="badge badge-general badge-sm mb-1 d-block w-75 text-center">一般会員</span>
                                                     @endif
@@ -105,6 +107,10 @@
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" name="roles[{{ $user->id }}][]" value="admin" id="role-admin-{{ $user->id }}" {{ in_array('admin', $roles) ? 'checked' : '' }}>
                                                     <label class="form-check-label small text-danger fw-semibold" for="role-admin-{{ $user->id }}">管理者</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="roles[{{ $user->id }}][]" value="equipment_manager" id="role-equipment-{{ $user->id }}" {{ in_array('equipment_manager', $roles) ? 'checked' : '' }}>
+                                                    <label class="form-check-label small text-primary fw-semibold" for="role-equipment-{{ $user->id }}">備品管理</label>
                                                 </div>
                                             </div>
                                         </td>
