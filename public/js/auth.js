@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextButton = document.getElementById('btn-next');
     const submitButton = document.getElementById('btn-submit');
     const errorAlert = document.getElementById('error-alert');
+    // 現在アクティブな WebAuthn 認証要求の AbortController
+    let activeAbortController = null;
 
     // パスキー登録画面の要素
     const registerKeyBtn = document.getElementById('btn-register-passkey');
@@ -116,11 +118,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
+
+        // --- B2. 「パスキーでログイン」ボタン直接押下フロー ---
+        const passkeyLoginButton = document.getElementById('btn-passkey-login');
+        if (passkeyLoginButton) {
+            passkeyLoginButton.addEventListener('click', async () => {
+                if (errorAlert) errorAlert.classList.add('d-none');
+                // メールアドレス指定なしで、通常のモーダルパスキー認証を起動
+                await executeWebAuthnLogin(null, csrfToken, false);
+            });
+        }
     }
 
     // --- C. パスキーログインの実行 (生体認証起動) ---
     async function executeWebAuthnLogin(email, csrfToken, isConditional = false) {
         try {
+            // 既にアクティブな認証リクエストがある場合は明示的にキャンセルする
+            if (activeAbortController) {
+                activeAbortController.abort();
+            }
+            activeAbortController = new AbortController();
+
             // サーバーからチャレンジ情報を取得
             const challengeResponse = await fetch('/webauthn/login/challenge', {
                 method: 'POST',
@@ -145,15 +163,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
+            // credentials.get 用のオプションオブジェクトを作成
+            const getCredentialsOptions = {
+                publicKey: options.publicKey,
+                signal: activeAbortController.signal // キャンセル用シグナルを登録
+            };
+
             // Conditional UI用のメディエーション（仲介）設定
             if (isConditional) {
-                options.publicKey.mediation = 'conditional';
+                getCredentialsOptions.mediation = 'conditional';
             }
 
             // ブラウザのWebAuthn認証APIを起動
-            const assertion = await navigator.credentials.get({
-                publicKey: options.publicKey
-            });
+            const assertion = await navigator.credentials.get(getCredentialsOptions);
 
             // 署名結果データをBase64URLに変換してサーバーへ送信
             const verifyPayload = {
@@ -188,6 +210,12 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = verifyResult.redirect;
 
         } catch (err) {
+            // ユーザーまたはシステムによる明示的なキャンセルの場合はエラー表示をしない
+            if (err.name === 'AbortError') {
+                console.log('WebAuthn request was aborted.');
+                return;
+            }
+
             // オートフィルのキャンセル等によるエラーはログ出力のみ（画面には出さない）
             if (isConditional) {
                 console.log('Conditional Auth Error (Expected on Cancel):', err);

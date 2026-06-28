@@ -17,11 +17,17 @@ class WebAuthnController extends Controller
 
     public function __construct()
     {
-        // 本システムのドメイン (www.syukuba.home) に基づき WebAuthn を初期化
+        // リクエストされた現在のホスト名を取得（ポート番号は除外したドメイン名）
+        $rpId = request()->getHost();
+
+        // 本システムのドメインに基づき WebAuthn を初期化
         $this->webAuthn = new WebAuthn(
             '保土ケ谷宿場まつり実行委員会 実務管理システム', // アプリ名
-            'www.syukuba.home'                            // ドメイン名 (ID)
+            $rpId                                         // 動的なホスト名を設定
         );
+
+        // JSONシリアライズ時にバイナリデータを純粋なBase64URL形式でエンコードするように設定
+        \lbuchs\WebAuthn\Binary\ByteBuffer::$useBase64UrlEncoding = true;
     }
 
     /**
@@ -53,9 +59,12 @@ class WebAuthnController extends Controller
                 true  // ユーザーの存在確認を要求
             );
 
-            // チャレンジ値をセッションに保存（検証時に使用）
+            // チャレンジ値をセッションに保存（検証時に使用、Base64URL文字列として保存）
             $challenge = $this->webAuthn->getChallenge();
-            session(['webauthn_login_challenge' => $challenge]);
+            $challengeString = $challenge instanceof \lbuchs\WebAuthn\Binary\ByteBuffer 
+                ? $challenge->getBinaryString() 
+                : $challenge;
+            session(['webauthn_login_challenge' => $this->base64UrlEncode($challengeString)]);
 
             return response()->json($args);
         } catch (\Exception $e) {
@@ -70,10 +79,12 @@ class WebAuthnController extends Controller
     public function postLoginVerify(Request $request)
     {
         try {
-            $challenge = session('webauthn_login_challenge');
-            if (!$challenge) {
+            $challengeBase64Url = session('webauthn_login_challenge');
+
+            if (!$challengeBase64Url) {
                 return response()->json(['error' => 'セッション有効期限切れ、または不正なチャレンジです。'], 400);
             }
+            $challenge = $this->base64UrlDecode($challengeBase64Url); // バイナリ文字列を取得
 
             // クライアントからの認証情報を取得
             $credentialId = $request->input('id'); // Base64URL
@@ -100,11 +111,10 @@ class WebAuthnController extends Controller
                 $clientDataJSON,
                 $authenticatorData,
                 $signature,
-                $this->base64UrlDecode($credentialId),
                 $publicKeyPEM,
                 $challenge,
                 $prevCounter,
-                true // ユーザー検証の要求
+                false // ユーザー検証の要求 (デバイス互換性のために緩和)
             );
 
             if (!$success) {
@@ -113,7 +123,7 @@ class WebAuthnController extends Controller
 
             // 認証カウンターの更新（クローン検知用）
             // processGet成功時に内部状態のカウンターが更新されるため取得
-            $webAuthnKey->counter = $this->webAuthn->getSignatureCounter();
+            $webAuthnKey->counter = $this->webAuthn->getSignatureCounter() ?? $prevCounter ?? 0;
             $webAuthnKey->last_used_at = now();
             $webAuthnKey->save();
 
@@ -184,9 +194,12 @@ class WebAuthnController extends Controller
                 false // アテステーション(デバイス証明)は不問
             );
 
-            // チャレンジ値をセッションに保存
+            // チャレンジ値をセッションに保存（Base64URL文字列として保存）
             $challenge = $this->webAuthn->getChallenge();
-            session(['webauthn_register_challenge' => $challenge]);
+            $challengeString = $challenge instanceof \lbuchs\WebAuthn\Binary\ByteBuffer 
+                ? $challenge->getBinaryString() 
+                : $challenge;
+            session(['webauthn_register_challenge' => $this->base64UrlEncode($challengeString)]);
             if ($token) {
                 session(['webauthn_register_token' => $token]);
             }
@@ -204,10 +217,11 @@ class WebAuthnController extends Controller
     public function postRegisterVerify(Request $request)
     {
         try {
-            $challenge = session('webauthn_register_challenge');
-            if (!$challenge) {
+            $challengeBase64Url = session('webauthn_register_challenge');
+            if (!$challengeBase64Url) {
                 return response()->json(['error' => 'セッション有効期限切れ、または不正なチャレンジです。'], 400);
             }
+            $challenge = $this->base64UrlDecode($challengeBase64Url); // バイナリ文字列を取得
 
             // トークンまたはログイン中ユーザーの確認
             $token = session('webauthn_register_token');
@@ -234,13 +248,13 @@ class WebAuthnController extends Controller
             $deviceName = $request->input('device_name', '新しいパスキーデバイス');
 
             // WebAuthnの検証処理
-            $data = $this->webAuthn->processRegister(
+            $data = $this->webAuthn->processCreate(
                 $clientDataJSON,
                 $attestationObject,
                 $challenge,
-                false, // ルート証明書の検証はスキップ
-                true,  // ユーザー検証の要求
-                true   // ユーザー存在確認の要求
+                true,  // $requireUserVerification (ユーザー検証の要求)
+                true,  // $requireUserPresent (ユーザー存在確認の要求)
+                false  // $failIfRootMismatch (ルート証明書の検証をスキップ)
             );
 
             if (!$data) {
@@ -250,7 +264,28 @@ class WebAuthnController extends Controller
             // 公開鍵とCredential IDをBase64URLエンコードして保存
             $credentialId = $this->base64UrlEncode($data->credentialId);
             $publicKeyPEM = $data->credentialPublicKey;
-            $aaguid = $data->aaguid;
+
+            // AAGUIDのバイナリをUUID形式の文字列に変換して保存（テストモックなどの文字列の場合はそのまま使用）
+            $aaguid = null;
+            $aaguidBin = '';
+            if ($data->AAGUID instanceof \lbuchs\WebAuthn\Binary\ByteBuffer) {
+                $aaguidBin = $data->AAGUID->getBinaryString();
+            } else if (is_string($data->AAGUID)) {
+                $aaguidBin = $data->AAGUID;
+            }
+
+            if (strlen($aaguidBin) === 16) {
+                $hex = bin2hex($aaguidBin);
+                $aaguid = sprintf('%s-%s-%s-%s-%s',
+                    substr($hex, 0, 8),
+                    substr($hex, 8, 4),
+                    substr($hex, 12, 4),
+                    substr($hex, 16, 4),
+                    substr($hex, 20, 12)
+                );
+            } else {
+                $aaguid = is_string($data->AAGUID) ? $data->AAGUID : ($data->AAGUID ? $data->AAGUID->getHex() : null);
+            }
 
             // 既に同一のCredential IDが登録されているかチェック
             if (WebAuthnKey::where('credential_id', $credentialId)->exists()) {
@@ -264,7 +299,7 @@ class WebAuthnController extends Controller
                 'public_key' => $publicKeyPEM,
                 'device_name' => $deviceName,
                 'aaguid' => $aaguid,
-                'counter' => $data->signatureCounter,
+                'counter' => $data->signatureCounter ?? 0,
             ]);
 
             // ワンタイムセッションだった場合は削除

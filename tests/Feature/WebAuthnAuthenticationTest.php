@@ -119,7 +119,7 @@ class WebAuthnAuthenticationTest extends TestCase
         $response->assertStatus(200)
             ->assertJson(['dummy_args' => true]);
 
-        $this->assertEquals('dummy_challenge_123', session('webauthn_login_challenge'));
+        $this->assertEquals($this->base64UrlEncode('dummy_challenge_123'), session('webauthn_login_challenge'));
     }
 
     public function test_login_challenge_generation_with_email(): void
@@ -167,7 +167,7 @@ class WebAuthnAuthenticationTest extends TestCase
             'counter' => 10,
         ]);
 
-        session(['webauthn_login_challenge' => 'active_challenge_123']);
+        session(['webauthn_login_challenge' => $this->base64UrlEncode('active_challenge_123')]);
 
         $this->webAuthnMock->shouldReceive('processGet')
             ->once()
@@ -175,11 +175,10 @@ class WebAuthnAuthenticationTest extends TestCase
                 'decoded_client_data',
                 'decoded_auth_data',
                 'decoded_sig',
-                Mockery::type('string'),
-                'dummy_pem_key',
-                'active_challenge_123',
-                10,
-                true
+                'dummy_pem_key',        // 第4引数: 公開鍵PEM
+                'active_challenge_123', // 第5引数: チャレンジ
+                10,                     // 第6引数: カウンター
+                false                   // 第7引数: ユーザー検証 (デバイス互換性のために緩和)
             )
             ->andReturn(true);
 
@@ -253,7 +252,7 @@ class WebAuthnAuthenticationTest extends TestCase
             'counter' => 0,
         ]);
 
-        session(['webauthn_login_challenge' => 'active_challenge_123']);
+        session(['webauthn_login_challenge' => $this->base64UrlEncode('active_challenge_123')]);
 
         $this->webAuthnMock->shouldReceive('processGet')->andReturn(true);
         $this->webAuthnMock->shouldReceive('getSignatureCounter')->andReturn(1);
@@ -289,7 +288,7 @@ class WebAuthnAuthenticationTest extends TestCase
             'counter' => 0,
         ]);
 
-        session(['webauthn_login_challenge' => 'active_challenge_123']);
+        session(['webauthn_login_challenge' => $this->base64UrlEncode('active_challenge_123')]);
 
         $this->webAuthnMock->shouldReceive('processGet')->andReturn(true);
         $this->webAuthnMock->shouldReceive('getSignatureCounter')->andReturn(1);
@@ -356,7 +355,7 @@ class WebAuthnAuthenticationTest extends TestCase
         $response->assertStatus(200)
             ->assertJson(['dummy_register_args' => true]);
 
-        $this->assertEquals('register_challenge_123', session('webauthn_register_challenge'));
+        $this->assertEquals($this->base64UrlEncode('register_challenge_123'), session('webauthn_register_challenge'));
         $this->assertNull(session('webauthn_register_token'));
     }
 
@@ -386,7 +385,7 @@ class WebAuthnAuthenticationTest extends TestCase
         $response->assertStatus(200)
             ->assertJson(['dummy_register_args' => true]);
 
-        $this->assertEquals('register_challenge_123', session('webauthn_register_challenge'));
+        $this->assertEquals($this->base64UrlEncode('register_challenge_123'), session('webauthn_register_challenge'));
         $this->assertEquals('valid_token_xyz', session('webauthn_register_token'));
     }
 
@@ -426,25 +425,25 @@ class WebAuthnAuthenticationTest extends TestCase
         ]);
 
         session([
-            'webauthn_register_challenge' => 'register_challenge_123',
+            'webauthn_register_challenge' => $this->base64UrlEncode('register_challenge_123'),
             'webauthn_register_token' => 'valid_token_xyz'
         ]);
 
         $dummyRegisterData = new \stdClass();
         $dummyRegisterData->credentialId = 'cred_id_binary_xyz';
         $dummyRegisterData->credentialPublicKey = 'public_key_pem_xyz';
-        $dummyRegisterData->aaguid = 'aaguid_xyz';
+        $dummyRegisterData->AAGUID = 'aaguid_xyz';
         $dummyRegisterData->signatureCounter = 5;
 
-        $this->webAuthnMock->shouldReceive('processRegister')
+        $this->webAuthnMock->shouldReceive('processCreate')
             ->once()
             ->with(
                 'decoded_client_data',
                 'decoded_attestation_object',
                 'register_challenge_123',
-                false,
                 true,
-                true
+                true,
+                false
             )
             ->andReturn($dummyRegisterData);
 
@@ -497,17 +496,17 @@ class WebAuthnAuthenticationTest extends TestCase
         ]);
 
         session([
-            'webauthn_register_challenge' => 'register_challenge_123',
+            'webauthn_register_challenge' => $this->base64UrlEncode('register_challenge_123'),
             'webauthn_register_token' => null // ログイン状態での追加登録
         ]);
 
         $dummyRegisterData = new \stdClass();
         $dummyRegisterData->credentialId = $credIdBinary;
         $dummyRegisterData->credentialPublicKey = 'public_key_pem_xyz';
-        $dummyRegisterData->aaguid = 'aaguid_xyz';
+        $dummyRegisterData->AAGUID = 'aaguid_xyz';
         $dummyRegisterData->signatureCounter = 5;
 
-        $this->webAuthnMock->shouldReceive('processRegister')->andReturn($dummyRegisterData);
+        $this->webAuthnMock->shouldReceive('processCreate')->andReturn($dummyRegisterData);
 
         $postData = [
             'clientDataJSON' => $this->base64UrlEncode('decoded_client_data'),
