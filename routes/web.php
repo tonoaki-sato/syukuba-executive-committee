@@ -158,8 +158,12 @@ Route::middleware(['auth', 'approved'])->prefix('equipment')->name('equipment.')
     });
 });
 
+// パスキーのトラブルシューティングページ
+Route::get('/passkey/troubleshooting', [WebAuthnController::class, 'showTroubleshooting'])->name('passkey.troubleshooting');
+
 // 初期リダイレクト
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
 

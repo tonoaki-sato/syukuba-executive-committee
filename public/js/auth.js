@@ -12,8 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextButton = document.getElementById('btn-next');
     const submitButton = document.getElementById('btn-submit');
     const errorAlert = document.getElementById('error-alert');
-    // 現在アクティブな WebAuthn 認証要求の AbortController
+    // 現在アクティブな WebAuthn 認証要求の AbortController と Promise
     let activeAbortController = null;
+    let activePromise = null;
 
     // パスキー登録画面の要素
     const registerKeyBtn = document.getElementById('btn-register-passkey');
@@ -132,13 +133,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- C. パスキーログインの実行 (生体認証起動) ---
     async function executeWebAuthnLogin(email, csrfToken, isConditional = false) {
-        try {
-            // 既にアクティブな認証リクエストがある場合は明示的にキャンセルする
+        // すでに実行中の Promise がある場合は、キャンセルしてその完了を待つ
+        if (activePromise) {
             if (activeAbortController) {
                 activeAbortController.abort();
             }
-            activeAbortController = new AbortController();
+            try {
+                await activePromise;
+            } catch (err) {
+                // キャンセルによる例外（AbortError）は意図されたものなので無視して次に進む
+            }
+            // ブラウザが内部状態をクリアするためのわずかな猶予
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
 
+        activeAbortController = new AbortController();
+
+        // 実際の一連の処理を非同期 Promise として実行し、参照を保持する
+        activePromise = (async () => {
             // サーバーからチャレンジ情報を取得
             const challengeResponse = await fetch('/webauthn/login/challenge', {
                 method: 'POST',
@@ -208,7 +220,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // ログイン成功：ダッシュボードへリダイレクト
             window.location.href = verifyResult.redirect;
+        })();
 
+        try {
+            await activePromise;
         } catch (err) {
             // ユーザーまたはシステムによる明示的なキャンセルの場合はエラー表示をしない
             if (err.name === 'AbortError') {
@@ -228,6 +243,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (submitButton) submitButton.classList.remove('d-none');
                 }
             }
+        } finally {
+            // 状態のクリア
+            activePromise = null;
+            activeAbortController = null;
         }
     }
 

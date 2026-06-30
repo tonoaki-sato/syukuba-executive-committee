@@ -521,4 +521,13 @@ class WebAuthnAuthenticationTest extends TestCase
         $response->assertStatus(400)
             ->assertJson(['error' => 'このデバイスは既に登録されています。']);
     }
+
+    public function test_passkey_troubleshooting_page_accessible(): void
+    {
+        $response = $this->get('/passkey/troubleshooting');
+
+        $response->assertStatus(200)
+            ->assertSee('パスキーのトラブルシューティング')
+            ->assertSee('重複して表示される場合の対処方法');
+    }
 }

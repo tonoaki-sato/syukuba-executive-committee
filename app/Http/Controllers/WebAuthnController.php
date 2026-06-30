@@ -123,7 +123,8 @@ class WebAuthnController extends Controller
 
             // 認証カウンターの更新（クローン検知用）
             // processGet成功時に内部状態のカウンターが更新されるため取得
-            $webAuthnKey->counter = $this->webAuthn->getSignatureCounter() ?? $prevCounter ?? 0;
+            $sigCounter = $this->webAuthn->getSignatureCounter();
+            $webAuthnKey->counter = ($sigCounter !== false && $sigCounter !== null) ? $sigCounter : ($prevCounter ?? 0);
             $webAuthnKey->last_used_at = now();
             $webAuthnKey->save();
 
@@ -284,7 +285,16 @@ class WebAuthnController extends Controller
                     substr($hex, 20, 12)
                 );
             } else {
-                $aaguid = is_string($data->AAGUID) ? $data->AAGUID : ($data->AAGUID ? $data->AAGUID->getHex() : null);
+                if (is_string($data->AAGUID)) {
+                    // 印刷不可能なバイナリ文字が含まれている場合のみ hex化する
+                    if (preg_match('/[^\x20-\x7e]/', $data->AAGUID)) {
+                        $aaguid = bin2hex($data->AAGUID);
+                    } else {
+                        $aaguid = $data->AAGUID;
+                    }
+                } else {
+                    $aaguid = $data->AAGUID ? $data->AAGUID->getHex() : null;
+                }
             }
 
             // 既に同一のCredential IDが登録されているかチェック
@@ -338,6 +348,14 @@ class WebAuthnController extends Controller
             'has_passkey' => $hasPasskey,
             'status' => $user->status // 仮会員かどうかのステータスも返す
         ]);
+    }
+
+    /**
+     * パスキーのトラブルシューティングページを表示
+     */
+    public function showTroubleshooting()
+    {
+        return view('auth.passkey_troubleshooting');
     }
 
     // --- Base64URL 変換ヘルパーメソッド ---

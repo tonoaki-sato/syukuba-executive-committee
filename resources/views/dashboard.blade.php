@@ -230,6 +230,16 @@
                         <span class="badge bg-secondary-subtle text-secondary btn-sm mt-3">準備中</span>
                     </div>
                 </div>
+                <div class="col">
+                    <div class="p-3 border rounded text-center h-100 d-flex flex-column justify-content-between bg-light-subtle opacity-75">
+                        <div>
+                            <span class="fs-3 d-block mb-1">📣</span>
+                            <span class="fw-bold small d-block text-dark">広告・協賛管理</span>
+                            <span class="text-muted" style="font-size: 0.75em;">協賛金・パンフレット広告</span>
+                        </div>
+                        <span class="badge bg-secondary-subtle text-secondary btn-sm mt-3">準備中</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

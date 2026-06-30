@@ -88,9 +88,15 @@
                             </p>
 
                             <div class="fw-bold mb-2 text-dark">🛡️ パスキーを未登録、または利用できない場合:</div>
-                            <p class="mb-0">
+                            <p class="mb-3">
                                 メールアドレスを入力して「次へ」をクリックし、従来通り「パスワードを入力してログイン」を行ってください。
                             </p>
+
+                            <div class="mt-3 pt-2 border-top">
+                                <a href="{{ route('passkey.troubleshooting') }}" class="fw-bold text-primary-color text-decoration-none">
+                                    ⚙️ パスキーの重複削除など詳細なトラブルシューティングはこちら &rarr;
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
