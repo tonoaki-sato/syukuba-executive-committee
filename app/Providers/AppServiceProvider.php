@@ -19,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Illuminate\Support\Facades\Gate::define('view-financials', function (\App\Models\User $user, ?int $year = null) {
+            $year = $year ?: session('active_fiscal_year', date('Y'));
+            return $user->canManageEquipment($year);
+        });
     }
 }

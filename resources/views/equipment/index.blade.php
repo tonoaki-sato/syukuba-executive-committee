@@ -36,6 +36,9 @@
                 <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab" aria-controls="dashboard" aria-selected="true">📊 ダッシュボード</button>
             </li>
             <li class="nav-item" role="presentation">
+                <a class="nav-link" href="{{ route('equipment.matrix') }}">📋 部門別コスト配分</a>
+            </li>
+            <li class="nav-item" role="presentation">
                 <button class="nav-link" id="ledger-tab" data-bs-toggle="tab" data-bs-target="#ledger" type="button" role="tab" aria-controls="ledger" aria-selected="false">⛺ 備品・倉庫台帳</button>
             </li>
             <li class="nav-item" role="presentation">
@@ -72,9 +75,15 @@
                     @if($canManage)
                         <div class="col-md-4">
                             <div class="card p-3 shadow-sm border-0 h-100 summary-panel" style="border-left-color: #8c1d30;">
-                                <span class="text-muted small">外部レンタル手配総額</span>
-                                <span class="fs-2 fw-bold text-danger mt-2">¥{{ number_format($totalRentalAmount) }}</span>
-                                <span class="small text-muted mt-2">※登録されたレンタル品単価×数量の自動合算</span>
+                                <span class="text-muted small">外部レンタル税込総請求額</span>
+                                <span class="fs-2 fw-bold text-danger mt-2">¥{{ number_format($rentalGrandTotal) }}</span>
+                                <div class="small text-muted mt-1" style="font-size: 0.8em;">
+                                    内訳：見積 ¥{{ number_format($rentalSubtotal) }}
+                                    @if($rentalDiscount > 0)
+                                         / 値引 -¥{{ number_format($rentalDiscount) }}
+                                    @endif
+                                    / 税 ¥{{ number_format($rentalTax) }}
+                                </div>
                             </div>
                         </div>
                     @endif

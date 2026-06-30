@@ -23,6 +23,7 @@ class Equipment extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'fiscal_year',
         'ownership_type',
         'name',
         'specifications',
@@ -69,5 +70,16 @@ class Equipment extends Model
     public function maintenanceLogs(): HasMany
     {
         return $this->hasMany(EquipmentMaintenanceLog::class, 'equipment_id');
+    }
+
+    /**
+     * 物理的な在庫管理対象の備品のみを抽出するスコープ。
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopePhysicalItems($query)
+    {
+        return $query->where('category', '!=', '諸経費・サービス');
     }
 }

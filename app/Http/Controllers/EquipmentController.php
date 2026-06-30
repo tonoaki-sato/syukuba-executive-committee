@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Equipment;
 use App\Models\EquipmentLoan;
 use App\Models\EquipmentMaintenanceLog;
+use App\Models\EquipmentRentalSummary;
 use App\Models\EquipmentStock;
 use App\Models\StorageLocation;
 use Illuminate\Http\Request;
@@ -22,9 +23,16 @@ class EquipmentController extends Controller
     {
         $year = session('active_fiscal_year', date('Y'));
 
-        $equipments = Equipment::orderBy('id', 'asc')->get();
+        // 年度での絞り込みを適用
+        $equipments = Equipment::where('fiscal_year', $year)->orderBy('id', 'asc')->get();
         $locations = StorageLocation::orderBy('id', 'asc')->get();
-        $stocks = EquipmentStock::with(['equipment', 'location'])->get();
+        
+        // 拠点別在庫（物理備品のみにスコープ）
+        $stocks = EquipmentStock::whereHas('equipment', function ($query) use ($year) {
+                $query->where('fiscal_year', $year)->physicalItems();
+            })
+            ->with(['equipment', 'location'])
+            ->get();
         
         $loans = EquipmentLoan::with(['equipment'])
             ->forFiscalYear($year)
@@ -38,12 +46,29 @@ class EquipmentController extends Controller
 
         $canManage = Auth::user()->canManageEquipment($year);
 
-        // レンタル備品の合計手配総額（権限者のみ算出）
-        $totalRentalAmount = 0;
+        // レンタル備品全体の集計（見積額、値引き、消費税、税込請求総額）の算出
+        $rentalSubtotal = 0;
+        $rentalDiscount = 0;
+        $rentalTax = 0;
+        $rentalGrandTotal = 0;
+
         if ($canManage) {
-            $totalRentalAmount = Equipment::where('ownership_type', 'rental')
+            $rentalSubtotal = Equipment::where('fiscal_year', $year)
+                ->where('ownership_type', 'rental')
                 ->get()
                 ->sum('total_amount');
+
+            $summary = EquipmentRentalSummary::where('fiscal_year', $year)->first();
+            if ($summary) {
+                $rentalDiscount = $summary->special_discount;
+                $taxable = max(0, $rentalSubtotal - $rentalDiscount);
+                $rentalTax = floor($taxable * ($summary->tax_rate / 100));
+                $rentalGrandTotal = $taxable + $rentalTax;
+            } else {
+                $taxable = $rentalSubtotal;
+                $rentalTax = floor($taxable * 0.10);
+                $rentalGrandTotal = $taxable + $rentalTax;
+            }
         }
 
         // 一般ユーザー向け：単価・金額情報を完全に秘匿化する
@@ -78,8 +103,11 @@ class EquipmentController extends Controller
             'stocks',
             'loans',
             'maintenanceLogs',
-            'totalRentalAmount',
             'canManage',
+            'rentalSubtotal',
+            'rentalDiscount',
+            'rentalTax',
+            'rentalGrandTotal',
             'year'
         ));
     }
@@ -107,6 +135,8 @@ class EquipmentController extends Controller
         }
 
         unset($validated['image']);
+
+        $validated['fiscal_year'] = session('active_fiscal_year', date('Y'));
 
         Equipment::create($validated);
 
@@ -323,30 +353,74 @@ class EquipmentController extends Controller
         $previousYear = $currentYear - 1;
 
         // 本年度の備品マスタがすでに存在しているかチェック
-        // ※このシステムでは備品・保管場所マスタ自体は年度横断だが、
-        // 貸出やログは年度別。
-        // 仕様書「年度データ移行」: 前年度の備品マスタおよび保管場所情報を新年度のデータベースへコピー移行
-        // ただし、DB設計上 comittee_equipments, comittee_storage_locations に年度カラムは無い。
-        // 年度切り替え時の引き継ぎについて：
-        // 備品マスタを「コピー」する場合、年度情報を持つ中間テーブルもしくはマスタ自体に年度を持たせる必要があるか？
-        // ER図によると comittee_equipments に年度はない。
-        // 在庫テーブル（comittee_equipment_stocks）も年度はない。
-        // 貸出（loans）とメンテナンス（maintenance_logs）のみに fiscal_year がある。
-        // では「コピー」とは何を指すのか？
-        // おそらく、新年度への移行時に「前年度の期末在庫（前年度時点の実在庫）」を「新年度の期首在庫」として
-        // そのまま引き継ぐ処理、もしくはマスタ定義が年度に依存しない構成であれば、特に行うことはない。
-        // しかし仕様書には「前年度の備品マスタおよび保管場所情報をコピー移行する処理」とある。
-        // マスタテーブルが年度依存しない設計（ER図に fiscal_year カラムがない）であるため、
-        // 処理としては「前年度の最終在庫数（comittee_equipment_stocks）」を「新年度の期首在庫」として
-        // 調整ログ等を残しながら引き継ぐ処理、または特に何もしなくても共通で参照できる。
-        // 念のため、コピー移行処理として「前年度の在庫をそのまま新年度の初期在庫として引き継ぐ（特にデータ重複を避ける）」
-        // または、将来の拡張を見据えて、単純にログに「新年度移行処理を実行しました」と記録し成功レスポンスを返すようにする。
-        // ここでは、前年度の全在庫データを取得し、本年度の初期在庫データとして複製または確認する処理を記述する。
-        // 今回のDB設計では stocks テーブルに年度カラムがないため、実際にはマスタおよび在庫は年度横断で共有されている。
-        // よって、このアクションは「成功メッセージ」を返すダミーまたはログ出力処理とする。
+        $exists = Equipment::where('fiscal_year', $currentYear)->exists();
+        if ($exists) {
+            return redirect()->route('equipment.index')->with('status', '本年度の備品データはすでに存在します。');
+        }
+
+        // 前年度の備品データを取得
+        $prevEquipments = Equipment::where('fiscal_year', $previousYear)->get();
+
+        if ($prevEquipments->isEmpty()) {
+            return redirect()->route('equipment.index')->with('status', '前年度の備品データが見つかりませんでした。');
+        }
+
+        DB::transaction(function () use ($prevEquipments, $currentYear) {
+            foreach ($prevEquipments as $prevEq) {
+                // 備品を本年度用にコピー
+                $newEq = $prevEq->replicate();
+                $newEq->fiscal_year = $currentYear;
+                $newEq->save();
+
+                // 拠点別在庫もコピー
+                $prevStocks = EquipmentStock::where('equipment_id', $prevEq->id)->get();
+                foreach ($prevStocks as $prevSt) {
+                    $newSt = $prevSt->replicate();
+                    $newSt->equipment_id = $newEq->id;
+                    $newSt->save();
+                }
+            }
+
+            // 部門（Departments）もコピーする
+            $prevDepts = \App\Models\Department::where('fiscal_year', $previousYear)->get();
+            foreach ($prevDepts as $prevDept) {
+                $newDept = $prevDept->replicate();
+                $newDept->fiscal_year = $currentYear;
+                $newDept->save();
+            }
+
+            // レンタル全体集計もコピーする
+            $prevSummary = \App\Models\EquipmentRentalSummary::where('fiscal_year', $previousYear)->first();
+            if ($prevSummary) {
+                $newSummary = $prevSummary->replicate();
+                $newSummary->fiscal_year = $currentYear;
+                $newSummary->save();
+            }
+        });
 
         Log::info("{$previousYear} 年度から {$currentYear} 年度への備品データ移行処理が実行されました。");
 
-        return redirect()->route('equipment.index')->with('status', "{$previousYear} 年度から正常にデータを引き継ぎました。");
+        return redirect()->route('equipment.index')->with('status', "{$previousYear} 年度から本年度（{$currentYear} 年度）へ備品データを引き継ぎました。");
+    }
+
+    /**
+     * レンタル全体集計（特別値引き・税率）の更新
+     */
+    public function updateRentalSummary(Request $request)
+    {
+        $year = session('active_fiscal_year', date('Y'));
+
+        $validated = $request->validate([
+            'special_discount' => 'required|integer|min:0',
+            'tax_rate' => 'required|numeric|between:0,99.99',
+            'notes' => 'nullable|string',
+        ]);
+
+        \App\Models\EquipmentRentalSummary::updateOrCreate(
+            ['fiscal_year' => $year],
+            $validated
+        );
+
+        return redirect()->route('equipment.index')->with('status', 'レンタル費用集計設定を更新しました。');
     }
 }

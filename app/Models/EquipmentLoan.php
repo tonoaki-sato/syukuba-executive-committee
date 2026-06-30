@@ -61,4 +61,20 @@ class EquipmentLoan extends Model
         $year = $year ?: session('active_fiscal_year', date('Y'));
         return $query->where('fiscal_year', $year);
     }
+
+    /**
+     * 借用者が部門（スタッフ）の場合のDepartmentリレーション。
+     */
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'borrower_id');
+    }
+
+    /**
+     * 借用者が出店者の場合のGozaichiApplicationリレーション。
+     */
+    public function gozaichiApplication(): BelongsTo
+    {
+        return $this->belongsTo(GozaichiApplication::class, 'borrower_id');
+    }
 }

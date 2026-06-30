@@ -143,6 +143,7 @@ Route::middleware(['auth', 'approved', 'gozaichi'])->prefix('goza')->name('goza.
 // --- 備品管理ルート（一般会員・幹事・管理者共通：閲覧のみ） ---
 Route::middleware(['auth', 'approved'])->prefix('equipment')->name('equipment.')->group(function () {
     Route::get('/', [\App\Http\Controllers\EquipmentController::class, 'index'])->name('index');
+    Route::get('/matrix', [\App\Http\Controllers\EquipmentMatrixController::class, 'index'])->name('matrix');
 
     // 登録・編集・削除などのCUD操作は備品管理者・幹事・管理者のみ
     Route::middleware(['equipment.manage'])->group(function () {
@@ -155,6 +156,7 @@ Route::middleware(['auth', 'approved'])->prefix('equipment')->name('equipment.')
         Route::put('/loan/update/{id}', [\App\Http\Controllers\EquipmentController::class, 'updateLoanStatus'])->name('loan.update');
         Route::post('/maintenance/store', [\App\Http\Controllers\EquipmentController::class, 'storeMaintenance'])->name('maintenance.store');
         Route::post('/copy-year', [\App\Http\Controllers\EquipmentController::class, 'copyFromPreviousYear'])->name('copy-year');
+        Route::put('/rental-summary', [\App\Http\Controllers\EquipmentController::class, 'updateRentalSummary'])->name('rental-summary.update');
     });
 });
 

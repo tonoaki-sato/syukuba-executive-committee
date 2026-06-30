@@ -11,9 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // 0. 部門（グループ）マスタ
+        Schema::create('comittee_departments', function (Blueprint $table) {
+            $table->id();
+            $table->smallInteger('fiscal_year')->index();
+            $table->string('code', 50); // 部門コード (例: COMMON, HONJIN)
+            $table->string('name', 100); // 部門名 (例: まつり共通, 本陣)
+            $table->string('category', 50); // カテゴリ (staff, partner, booth)
+            $table->timestamps();
+
+            $table->unique(['fiscal_year', 'code']);
+        });
+
         // 1. 備品マスタ
         Schema::create('comittee_equipments', function (Blueprint $table) {
             $table->id();
+            $table->smallInteger('fiscal_year')->index(); // 開催年度
             $table->string('ownership_type'); // 'owned' or 'rental'
             $table->string('name');
             $table->string('specifications')->nullable();
@@ -26,7 +39,17 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // 2. 保管場所
+        // 2. レンタル全体費用集計
+        Schema::create('comittee_equipment_rental_summaries', function (Blueprint $table) {
+            $table->id();
+            $table->smallInteger('fiscal_year')->unique();
+            $table->integer('special_discount')->default(0);
+            $table->decimal('tax_rate', 4, 2)->default(10.00);
+            $table->text('notes')->nullable();
+            $table->timestamps();
+        });
+
+        // 3. 保管場所
         Schema::create('comittee_storage_locations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -35,7 +58,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // 3. 拠点別在庫
+        // 4. 拠点別在庫
         Schema::create('comittee_equipment_stocks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('equipment_id')->constrained('comittee_equipments')->onDelete('cascade');
@@ -45,10 +68,10 @@ return new class extends Migration
             $table->unique(['equipment_id', 'storage_location_id'], 'equip_stock_unique');
         });
 
-        // 4. 貸出・割当履歴
+        // 5. 貸出・割当履歴
         Schema::create('comittee_equipment_loans', function (Blueprint $table) {
             $table->id();
-            $table->integer('fiscal_year');
+            $table->smallInteger('fiscal_year')->index(); // 開催年度
             $table->foreignId('equipment_id')->constrained('comittee_equipments')->onDelete('cascade');
             $table->string('borrower_type'); // 'gozaichi' or 'staff'
             $table->integer('borrower_id');
@@ -62,10 +85,10 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // 5. 破損・補充
+        // 6. 破損・補充
         Schema::create('comittee_equipment_maintenance_logs', function (Blueprint $table) {
             $table->id();
-            $table->integer('fiscal_year');
+            $table->smallInteger('fiscal_year')->index(); // 開催年度
             $table->foreignId('equipment_id')->constrained('comittee_equipments')->onDelete('cascade');
             $table->foreignId('storage_location_id')->nullable()->constrained('comittee_storage_locations')->onDelete('set null');
             $table->string('log_type'); // 'repair'/'discard'/'lost'/'replenish'
@@ -85,6 +108,8 @@ return new class extends Migration
         Schema::dropIfExists('comittee_equipment_loans');
         Schema::dropIfExists('comittee_equipment_stocks');
         Schema::dropIfExists('comittee_storage_locations');
+        Schema::dropIfExists('comittee_equipment_rental_summaries');
         Schema::dropIfExists('comittee_equipments');
+        Schema::dropIfExists('comittee_departments');
     }
 };

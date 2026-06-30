@@ -105,6 +105,7 @@ class EquipmentTest extends TestCase
     {
         // テスト用データ登録
         $eq = Equipment::create([
+            'fiscal_year' => 2026,
             'ownership_type' => 'rental',
             'name' => 'パイプテント',
             'specifications' => '1.5k x 2k',
@@ -124,7 +125,7 @@ class EquipmentTest extends TestCase
         // 金額情報は HTML に含まれないことの検証
         $response->assertDontSee('8,000'); // 単価 8,000円 の表記
         $response->assertDontSee('80,000'); // 合計金額 10×8000=80,000円 の表記
-        $response->assertDontSee('外部レンタル手配総額');
+        $response->assertDontSee('外部レンタル税込総請求額');
 
         // ビュー変数内の equipments からも unit_price が隠蔽されているか検証
         $viewEquipments = $response->original->getData()['equipments'];
@@ -137,6 +138,7 @@ class EquipmentTest extends TestCase
     public function test_authorized_users_can_see_prices_and_forms(): void
     {
         $eq = Equipment::create([
+            'fiscal_year' => 2026,
             'ownership_type' => 'rental',
             'name' => 'パイプテント',
             'specifications' => '1.5k x 2k',
@@ -153,7 +155,7 @@ class EquipmentTest extends TestCase
             // 金額情報が表示されること
             $response->assertSee('8,000');
             $response->assertSee('80,000');
-            $response->assertSee('外部レンタル手配総額');
+            $response->assertSee('外部レンタル税込総請求額');
 
             // CUD操作フォーム・ボタンが存在すること
             $response->assertSee('備品マスタ新規登録');
