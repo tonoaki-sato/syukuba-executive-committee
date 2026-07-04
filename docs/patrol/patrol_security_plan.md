@@ -47,7 +47,7 @@
 ### エリアおよび巡回配置図
 
 ```mermaid
-graph TD
+flowchart TD
     subgraph MainStreet ["メイン通り（約300m・歩行者天国）"]
         GateN["【北側ゲート（メイン通り北端）】<br>(外部警備会社)"]
         Honjin["【本陣】<br>(統括拠点)"]
@@ -57,7 +57,7 @@ graph TD
         Honjin <-->|A班巡回| GateS
     end
     
-    Kids["【キッズ村】 小学校跡地<br>(C班が巡回警戒)"] <-->|導線: 裏路地 約100m<br>(C班が往復巡回 / 車両通行あり)| GateN
+    Kids["【キッズ村】 小学校跡地<br>(C班が巡回警戒)"] <-->|"導線: 裏路地 約100m<br>(C班が往復巡回 / 車両通行あり)"| GateN
 
     %% 高コントラスト・高視認性スタイル設定
     style Honjin fill:#E65100,stroke:#BF360C,stroke-width:2px,color:#ffffff
@@ -118,11 +118,11 @@ graph TD
 ### 連絡系統およびエスカレーションフロー
 
 ```mermaid
-graph TD
-    Honjin["【本陣】<br>(統括・情報集約)"] <-->|連絡ツール (一斉通話)| PatA["巡回A班<br>(メイン南)"]
-    Honjin <-->|連絡ツール (一斉通話)| PatB["巡回B班<br>(メイン北)"]
-    Honjin <-->|連絡ツール (一斉通話)| PatC["巡回C班<br>(キッズ・裏路地)"]
-    Honjin <-->|連絡ツール (一斉通話)| Aid["救護班<br>(救護所常駐)"]
+flowchart TD
+    Honjin["【本陣】<br>(統括・情報集約)"] <-->|"連絡ツール (一斉通話)"| PatA["巡回A班<br>(メイン南)"]
+    Honjin <-->|"連絡ツール (一斉通話)"| PatB["巡回B班<br>(メイン北)"]
+    Honjin <-->|"連絡ツール (一斉通話)"| PatC["巡回C班<br>(キッズ・裏路地)"]
+    Honjin <-->|"連絡ツール (一斉通話)"| Aid["救護班<br>(救護所常駐)"]
     
     Honjin <-->|ホットライン| SecCompany["外部警備会社 現場責任者<br>(北側・南側ゲート窓口)"]
     Honjin <-->|緊急通報| External["警察・消防・救急車"]

@@ -59,6 +59,10 @@ Route::middleware(['auth', 'approved'])->group(function () {
     // ログイン状態での追加パスキー登録用チャレンジAPI (非同期)
     Route::post('/webauthn/register/challenge', [WebAuthnController::class, 'getRegisterChallenge']);
     Route::post('/webauthn/register/verify', [WebAuthnController::class, 'postRegisterVerify']);
+
+    // 文書管理
+    Route::get('/documents', [\App\Http\Controllers\DocumentController::class, 'index'])->name('documents.index');
+    Route::get('/documents/{key}', [\App\Http\Controllers\DocumentController::class, 'show'])->name('documents.show');
 });
 
 // --- 幹事 ＆ 管理者ルート（会議作成・議事録） ---

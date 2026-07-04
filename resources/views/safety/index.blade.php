@@ -215,11 +215,11 @@ flowchart TD
         Honjin["【本陣】<br>(統括拠点)"]
         GateS["【南側ゲート（メイン通り南端）】<br>(外部警備会社)"]
         
-        GateN -- "B班巡回" &lt;--&gt; Honjin
-        Honjin -- "A班巡回" &lt;--&gt; GateS
+        GateN &lt;--&gt;|B班巡回| Honjin
+        Honjin &lt;--&gt;|A班巡回| GateS
     end
     
-    Kids["【キッズ村】 小学校跡地<br>(C班が巡回警戒)"] -- "導線: 裏路地 約100m (C班往復巡回/車両通行あり)" &lt;--&gt; GateN
+    Kids["【キッズ村】 小学校跡地<br>(C班が巡回警戒)"] &lt;--&gt;|"導線: 裏路地 約100m (C班往復巡回/車両通行あり)"| GateN
 
     %% スタイル設定
     style Honjin fill:#f8d7da,stroke:#f5c2c7,stroke-width:2px,color:#842029
@@ -273,13 +273,13 @@ flowchart TD
                             <h5 class="fw-bold text-secondary-color border-bottom pb-2 mb-3">6. 緊急時エスカレーションフロー</h5>
                             <div class="mermaid-diagram text-center">
 flowchart TD
-    Honjin["【本陣】<br>(統括・情報集約)"] -- "連絡ツール (一斉通話)" &lt;--&gt; PatA["巡回A班<br>(メイン南)"]
-    Honjin -- "連絡ツール (一斉通話)" &lt;--&gt; PatB["巡回B班<br>(メイン北)"]
-    Honjin -- "連絡ツール (一斉通話)" &lt;--&gt; PatC["巡回C班<br>(キッズ・裏路地)"]
-    Honjin -- "連絡ツール (一斉通話)" &lt;--&gt; Aid["救護班<br>(救護所常駐)"]
+    Honjin["【本陣】<br>(統括・情報集約)"] &lt;--&gt;|"連絡ツール (一斉通話)"| PatA["巡回A班<br>(メイン南)"]
+    Honjin &lt;--&gt;|"連絡ツール (一斉通話)"| PatB["巡回B班<br>(メイン北)"]
+    Honjin &lt;--&gt;|"連絡ツール (一斉通話)"| PatC["巡回C班<br>(キッズ・裏路地)"]
+    Honjin &lt;--&gt;|"連絡ツール (一斉通話)"| Aid["救護班<br>(救護所常駐)"]
     
-    Honjin -- "ホットライン" &lt;--&gt; SecCompany["外部警備会社 現場責任者<br>(北側・南側ゲート窓口)"]
-    Honjin -- "緊急通報" &lt;--&gt; External["警察・消防・救急車"]
+    Honjin &lt;--&gt;|ホットライン| SecCompany["外部警備会社 現場責任者<br>(北側・南側ゲート窓口)"]
+    Honjin &lt;--&gt;|緊急通報| External["警察・消防・救急車"]
 
     %% スタイル設定
     style Honjin fill:#f8d7da,stroke:#f5c2c7,stroke-width:2px,color:#842029
