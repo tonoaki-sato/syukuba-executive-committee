@@ -40,80 +40,6 @@ class DatabaseSeeder extends Seeder
             'status' => 'active',
         ]);
 
-        // 2. テスト用幹事会員 (システム管理者が承認)
-        $kanji = User::create([
-            'name' => '幹事 太郎',
-            'name_kana' => 'かんじ たろう',
-            'email' => 'kanji@example.com',
-            'password' => Hash::make('password'),
-            'profession' => '電気工事店経営',
-            'affiliation' => '宿場商店会',
-            'skills' => ['電気工事', '音響・映像', '設営・運搬'],
-            'roles' => ['kanji', 'general'],
-            'referrer_id' => $admin->id,
-            'line_display_name' => 'たろう＠電気屋',
-            'status' => 'active',
-            'approved_by' => $admin->id,
-            'approved_at' => now(),
-        ]);
-
-        // 2026年度の所属を登録
-        UserYear::create([
-            'user_id' => $kanji->id,
-            'fiscal_year' => $fiscalYear,
-            'roles' => ['kanji', 'general'],
-            'status' => 'active',
-        ]);
-
-        // 3. テスト用一般会員 (幹事の紹介、システム管理者が承認)
-        $member = User::create([
-            'name' => '一般 次郎',
-            'name_kana' => 'いっぱん じろう',
-            'email' => 'member@example.com',
-            'password' => Hash::make('password'),
-            'profession' => '飲食店店主',
-            'affiliation' => '宿場町内会',
-            'skills' => ['調理・衛生'],
-            'roles' => ['general'],
-            'referrer_id' => $kanji->id,
-            'line_display_name' => 'じろう＠飲食店',
-            'status' => 'active',
-            'approved_by' => $admin->id,
-            'approved_at' => now(),
-        ]);
-
-        // 2026年度の所属を登録
-        UserYear::create([
-            'user_id' => $member->id,
-            'fiscal_year' => $fiscalYear,
-            'roles' => ['general'],
-            'status' => 'active',
-        ]);
-
-        // 4. 新設：テスト用備品管理者 (システム管理者が承認)
-        $equipmentManager = User::create([
-            'name' => '備品 司',
-            'name_kana' => 'びひん つかさ',
-            'email' => 'equipment@example.com',
-            'password' => Hash::make('password'),
-            'profession' => 'イベント設営会社勤務',
-            'affiliation' => '設営協力会',
-            'skills' => ['設営・運搬', '安全管理'],
-            'roles' => ['equipment_manager', 'general'],
-            'referrer_id' => $admin->id,
-            'line_display_name' => 'つかさ＠備品管理',
-            'status' => 'active',
-            'approved_by' => $admin->id,
-            'approved_at' => now(),
-        ]);
-
-        // 2026年度の所属を登録
-        UserYear::create([
-            'user_id' => $equipmentManager->id,
-            'fiscal_year' => $fiscalYear,
-            'roles' => ['equipment_manager', 'general'],
-            'status' => 'active',
-        ]);
 
         // 5. 保管場所初期データ
         $room = \App\Models\StorageLocation::create([
@@ -284,6 +210,9 @@ class DatabaseSeeder extends Seeder
             'quantity_loaned' => 3,
             'status' => 'loaned',
         ]);
+
+        // 9. 外部ユーザーデータの移行インポート
+        $this->call(UserMigrationSeeder::class);
     }
 }
 
