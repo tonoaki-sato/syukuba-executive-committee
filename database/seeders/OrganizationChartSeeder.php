@@ -164,11 +164,10 @@ class OrganizationChartSeeder extends Seeder
             ],
             'CHARACTER' => [
                 ['宿場くん・宿場ちゃん', 'キャラクター', false, 1],
-                ['志田', 'アクター', false, 2],
-                ['ほのか', 'アクター', false, 3],
-                ['斎藤', 'お世話係', false, 4],
-                ['みずほ', 'お世話係', false, 5],
-                ['堀', 'リニューアル', false, 6]
+                ['ほのか', 'アクター', false, 2],
+                ['斎藤', 'お世話係', false, 3],
+                ['みずほ', 'お世話係', false, 4],
+                ['堀', 'リニューアル', false, 5]
             ],
             'SUPPORT' => [
                 ['ジョーム', '会場サポート責任者', true, 1],
