@@ -168,6 +168,7 @@
                         <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="adminDropdown">
                             <li><a class="dropdown-value dropdown-item {{ Route::is('admin.users.pending') ? 'active' : '' }}" href="{{ route('admin.users.pending') }}">承認待ち一覧</a></li>
                             <li><a class="dropdown-value dropdown-item {{ Route::is('admin.users.index') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">会員一覧・パスキー管理</a></li>
+                            <li><a class="dropdown-value dropdown-item {{ Route::is('admin.departments.index') ? 'active' : '' }}" href="{{ route('admin.departments.index') }}">組織図管理</a></li>
                         </ul>
                     </li>
                     @endif

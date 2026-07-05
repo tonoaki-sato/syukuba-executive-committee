@@ -98,6 +98,19 @@ Route::middleware(['auth', 'approved', 'admin'])->prefix('admin')->name('admin.'
 
     // ベースマップPDFのアップロード・画像変換
     Route::post('/map/upload-base', [\App\Http\Controllers\GozaichiMapController::class, 'uploadBaseMap'])->name('map.uploadBase');
+
+    // 組織図（部門・メンバー）管理
+    Route::prefix('departments')->name('departments.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\DepartmentController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\DepartmentController::class, 'store'])->name('store');
+        Route::put('/{department}', [\App\Http\Controllers\DepartmentController::class, 'update'])->name('update');
+        Route::delete('/{department}', [\App\Http\Controllers\DepartmentController::class, 'destroy'])->name('destroy');
+        Route::post('/copy', [\App\Http\Controllers\DepartmentController::class, 'copyFromPreviousYear'])->name('copy');
+
+        Route::post('/{department}/members', [\App\Http\Controllers\DepartmentMemberController::class, 'store'])->name('members.store');
+        Route::put('/members/{member}', [\App\Http\Controllers\DepartmentMemberController::class, 'update'])->name('members.update');
+        Route::delete('/members/{member}', [\App\Http\Controllers\DepartmentMemberController::class, 'destroy'])->name('members.destroy');
+    });
 });
 
 

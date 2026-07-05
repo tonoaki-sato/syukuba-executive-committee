@@ -27,7 +27,33 @@ class Department extends Model
         'code',
         'name',
         'category',
+        'parent_id',
+        'sort_order',
     ];
+
+    /**
+     * 親部門を取得 (belongsTo)
+     */
+    public function parent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'parent_id');
+    }
+
+    /**
+     * 子部門を取得 (hasMany)
+     */
+    public function children(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Department::class, 'parent_id')->orderBy('sort_order');
+    }
+
+    /**
+     * 部門メンバーを取得 (hasMany)
+     */
+    public function members(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(DepartmentMember::class, 'department_id')->orderBy('sort_order');
+    }
 
     /**
      * この部門に割り当てられた貸出・割当履歴とのリレーション。

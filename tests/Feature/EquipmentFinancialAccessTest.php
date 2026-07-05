@@ -15,6 +15,45 @@ class EquipmentFinancialAccessTest extends TestCase
         parent::setUp();
         // シードを実行して、テスト用の幹事、一般会員、備品等の初期データを投入する
         $this->seed();
+
+        // 必要なテスト用ユーザーが存在しない場合は作成する
+        if (!User::where('email', 'kanji@example.com')->exists()) {
+            $kanji = User::create([
+                'name' => '幹事 太郎',
+                'name_kana' => 'かんじ たろう',
+                'email' => 'kanji@example.com',
+                'password' => bcrypt('password'),
+                'profession' => '有志',
+                'line_display_name' => 'kanji_line',
+                'roles' => ['kanji', 'general'],
+                'status' => 'active',
+            ]);
+            \App\Models\UserYear::create([
+                'user_id' => $kanji->id,
+                'fiscal_year' => 2026,
+                'roles' => ['kanji', 'general'],
+                'status' => 'active',
+            ]);
+        }
+
+        if (!User::where('email', 'member@example.com')->exists()) {
+            $member = User::create([
+                'name' => '会員 一郎',
+                'name_kana' => 'かいいん いちろう',
+                'email' => 'member@example.com',
+                'password' => bcrypt('password'),
+                'profession' => '有志',
+                'line_display_name' => 'member_line',
+                'roles' => ['general'],
+                'status' => 'active',
+            ]);
+            \App\Models\UserYear::create([
+                'user_id' => $member->id,
+                'fiscal_year' => 2026,
+                'roles' => ['general'],
+                'status' => 'active',
+            ]);
+        }
     }
 
     /**

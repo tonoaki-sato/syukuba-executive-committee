@@ -1,0 +1,134 @@
+/* 組織図管理機能 カスタムスタイル (CSP対応: インラインCSS禁止) */
+
+/* 年度選択セレクトボックス */
+.fiscal-year-select {
+    width: 120px;
+}
+
+/* 最上位ドロップゾーン */
+.drop-root-zone-styled {
+    border-style: dashed;
+    transition: all 0.3s;
+}
+
+/* スクロール可能なツリー領域 */
+.org-tree-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    background-color: #fcfbfa !important;
+    border: 1px solid #ebdcd0 !important;
+    min-height: 600px;
+}
+
+.org-tree {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.org-tree ul {
+    padding-left: 50px;
+    position: relative;
+    transition: all 0.5s;
+    margin: 0;
+    list-style: none;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.org-tree li {
+    position: relative;
+    padding: 8px 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* コネクタ水平線 */
+.org-tree li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    border-top: 2px solid #bda893;
+    width: 50px;
+    height: 0;
+}
+
+/* コネクタ垂直線 */
+.org-tree li::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    border-left: 2px solid #bda893;
+    height: 100%;
+}
+
+/* 最初の要素の上の垂直線を消す */
+.org-tree li:first-child::after {
+    top: 50%;
+    height: 50%;
+}
+
+/* 最後の要素の下の垂直線を消す */
+.org-tree li:last-child::after {
+    height: 50%;
+}
+
+/* 子が一つの場合は垂直線を消す */
+.org-tree li:only-child::after {
+    display: none;
+}
+
+/* 最上位ノードの接続線を非表示 */
+.org-tree > ul > li::before,
+.org-tree > ul > li::after {
+    display: none !important;
+}
+
+.org-tree > ul {
+    padding-left: 0;
+}
+
+/* 部門カード装飾 */
+.org-card {
+    width: 260px;
+    border: 1px solid var(--border-color) !important;
+    border-top: 3px solid var(--primary-color) !important;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    cursor: grab;
+    display: inline-block;
+    white-space: normal; /* テキストの折り返しを許容 */
+    z-index: 10;
+    background-color: #ffffff;
+}
+
+.org-card:active {
+    cursor: grabbing;
+}
+
+/* メンバー名のコンテナ */
+.member-display-name-container {
+    max-width: 170px;
+}
+
+/* ドラッグ時のスタイル */
+.org-tree-node.dragging {
+    opacity: 0.4;
+}
+
+/* ドラッグオーバーされた時のスタイル */
+.org-tree-node.drag-over > .org-card {
+    border: 2px dashed var(--primary-color) !important;
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(140, 29, 48, 0.2) !important;
+}
+
+#drop-root-zone.drag-enter {
+    background-color: #fff3cd !important;
+    border-color: #ffc107 !important;
+    transform: scale(1.01);
+}
