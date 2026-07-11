@@ -21,60 +21,88 @@
         <!-- セクション1: パスキーの正しい手順 -->
         <div class="card shadow-sm border-0 mb-4 overflow-hidden">
             <div class="card-header bg-primary-color text-white py-3">
-                <h5 class="mb-0 fw-bold"><i class="bi bi-info-circle-fill me-2"></i>1. パスキーの正しい利用手順</h5>
+                <h5 class="mb-0 fw-bold"><i class="bi bi-info-circle-fill me-2"></i>1. パスキーの登録と利用手順</h5>
             </div>
             <div class="card-body p-4">
                 <p class="text-muted mb-4">
-                    パスキーは、お手持ちのスマートフォンやPCの生体認証（指紋・顔認証）または端末のPINコードを使用して、安全かつスピーディにログインする仕組みです。
+                    当システムはセキュリティ強化のため、従来のパスワードを廃止し、<strong>完全パスレス（パスキー専用）認証</strong>を採用しています。
+                    ログインには、お手持ちのスマートフォンやPCの生体認証（指紋・顔認証）または端末のPINコード（暗証番号）を使用します。
                 </p>
 
                 <div class="row g-4">
-                    <!-- 登録手順 -->
+                    <!-- 新規登録手順 -->
                     <div class="col-md-6 border-end-md">
                         <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-primary-color me-2 fs-6">登録</span>
-                            <h6 class="fw-bold mb-0 text-dark">パスキーの登録手順</h6>
+                            <span class="badge bg-primary-color me-2 fs-6">新規</span>
+                            <h6 class="fw-bold mb-0 text-dark">新規会員（はじめての方）の登録手順</h6>
                         </div>
                         <div class="position-relative ps-3 border-start border-primary-subtle ms-2">
                             <div class="mb-3 position-relative">
                                 <span class="step-num bg-light text-primary-color border border-primary-subtle rounded-circle d-inline-flex justify-content-center align-items-center fw-bold" style="width: 24px; height: 24px; font-size: 0.8rem; margin-left: -25px; background: white !important;">1</span>
                                 <div class="ms-3">
-                                    <strong class="text-dark small">管理者へ登録申請</strong>
-                                    <p class="text-muted small mb-0">パスキーはセキュリティのため、システム管理者が発行する「ワンタイム登録URL」からのみ追加登録できます。</p>
+                                    <strong class="text-dark small">仮登録の申請</strong>
+                                    <p class="text-muted small mb-0">ログイン画面下部の「新規会員の登録申請（仮登録）を行う」からメールアドレスや身元情報を入力して申請します。この時点ではパスワードは設定しません。</p>
                                 </div>
                             </div>
                             <div class="mb-3 position-relative">
                                 <span class="step-num bg-light text-primary-color border border-primary-subtle rounded-circle d-inline-flex justify-content-center align-items-center fw-bold" style="width: 24px; height: 24px; font-size: 0.8rem; margin-left: -25px; background: white !important;">2</span>
                                 <div class="ms-3">
-                                    <strong class="text-dark small">登録用URLへのアクセス</strong>
-                                    <p class="text-muted small mb-0">管理者から通知されたワンタイムURLに、登録したいデバイス（スマホやPC）のブラウザでアクセスします。</p>
+                                    <strong class="text-dark small">本部による会員承認</strong>
+                                    <p class="text-muted small mb-0">実行委員会本部（システム管理者・幹事）が申請内容を確認し、正式会員としての承認を行います。</p>
+                                </div>
+                            </div>
+                            <div class="mb-3 position-relative">
+                                <span class="step-num bg-light text-primary-color border border-primary-subtle rounded-circle d-inline-flex justify-content-center align-items-center fw-bold" style="width: 24px; height: 24px; font-size: 0.8rem; margin-left: -25px; background: white !important;">3</span>
+                                <div class="ms-3">
+                                    <strong class="text-dark small">ワンタイム登録URLの受領</strong>
+                                    <p class="text-muted small mb-0">承認完了後、システムよりログイン・パスキー設定用の「ワンタイムURL」（24時間有効）が発行され、管理者等から通知されます。</p>
                                 </div>
                             </div>
                             <div class="position-relative">
-                                <span class="step-num bg-light text-primary-color border border-primary-subtle rounded-circle d-inline-flex justify-content-center align-items-center fw-bold" style="width: 24px; height: 24px; font-size: 0.8rem; margin-left: -25px; background: white !important;">3</span>
+                                <span class="step-num bg-light text-primary-color border border-primary-subtle rounded-circle d-inline-flex justify-content-center align-items-center fw-bold" style="width: 24px; height: 24px; font-size: 0.8rem; margin-left: -25px; background: white !important;">4</span>
                                 <div class="ms-3">
-                                    <strong class="text-dark small">生体認証の登録</strong>
-                                    <p class="text-muted small mb-0">画面の指示に従い、端末の指紋・顔、または暗証番号(PIN)を登録すれば完了です。</p>
+                                    <strong class="text-dark small">パスキーの登録・ログイン</strong>
+                                    <p class="text-muted small mb-0">利用したい端末のブラウザで通知されたURLにアクセスし、画面の指示に従って端末の指紋・顔・PINを登録すると、本登録が完了し自動的にログインされます。</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ログイン手順 -->
+                    <!-- 追加・再登録手順 -->
                     <div class="col-md-6">
                         <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-secondary me-2 fs-6">ログイン</span>
-                            <h6 class="fw-bold mb-0 text-dark">パスキーでのログイン手順</h6>
+                            <span class="badge bg-secondary me-2 fs-6">追加・再設定</span>
+                            <h6 class="fw-bold mb-0 text-dark">既存会員の端末追加・再設定手順</h6>
                         </div>
-                        
-                        <div class="mb-3 bg-light p-3 rounded">
-                            <strong class="text-dark small d-block mb-1">方法A: 自動提案（推奨）</strong>
-                            <p class="text-muted small mb-0">メールアドレス入力欄をクリック・タップすると、ブラウザが保存されたパスキーを提案します。その提案を選択し、生体認証を行うだけでログイン完了です。</p>
-                        </div>
-
-                        <div class="bg-light p-3 rounded">
-                            <strong class="text-dark small d-block mb-1">方法B: ログインボタンから</strong>
-                            <p class="text-muted small mb-0">「パスキーでログイン」ボタンをクリックし、ブラウザの確認ダイアログが立ち上がったら、登録済みの生体認証等を入力します。</p>
+                        <div class="position-relative ps-3 border-start border-secondary-subtle ms-2">
+                            <div class="mb-3 position-relative">
+                                <span class="step-num bg-light text-secondary border border-secondary-subtle rounded-circle d-inline-flex justify-content-center align-items-center fw-bold" style="width: 24px; height: 24px; font-size: 0.8rem; margin-left: -25px; background: white !important;">1</span>
+                                <div class="ms-3">
+                                    <strong class="text-dark small">管理者へ再設定を依頼</strong>
+                                    <p class="text-muted small mb-0">機種変更やパスキー紛失によりログインできない場合、実行委員会のシステム管理者へ「パスキー登録URLの再発行」を依頼します。</p>
+                                </div>
+                            </div>
+                            <div class="mb-3 position-relative">
+                                <span class="step-num bg-light text-secondary border border-secondary-subtle rounded-circle d-inline-flex justify-content-center align-items-center fw-bold" style="width: 24px; height: 24px; font-size: 0.8rem; margin-left: -25px; background: white !important;">2</span>
+                                <div class="ms-3">
+                                    <strong class="text-dark small">既存キーの自動リセット（セキュリティ）</strong>
+                                    <p class="text-muted small mb-0">管理者が再発行セッションを実行した時点で、安全のため該当ユーザーの旧パスキーはデータベースから即時物理削除されます。</p>
+                                </div>
+                            </div>
+                            <div class="mb-3 position-relative">
+                                <span class="step-num bg-light text-secondary border border-secondary-subtle rounded-circle d-inline-flex justify-content-center align-items-center fw-bold" style="width: 24px; height: 24px; font-size: 0.8rem; margin-left: -25px; background: white !important;">3</span>
+                                <div class="ms-3">
+                                    <strong class="text-dark small">新しいURLからアクセス</strong>
+                                    <p class="text-muted small mb-0">管理者から通知された新しいワンタイム登録URL（24時間有効）に、追加したい端末でアクセスします。</p>
+                                </div>
+                            </div>
+                            <div class="position-relative">
+                                <span class="step-num bg-light text-secondary border border-secondary-subtle rounded-circle d-inline-flex justify-content-center align-items-center fw-bold" style="width: 24px; height: 24px; font-size: 0.8rem; margin-left: -25px; background: white !important;">4</span>
+                                <div class="ms-3">
+                                    <strong class="text-dark small">新しいパスキーの登録</strong>
+                                    <p class="text-muted small mb-0">画面の指示に従い、新しいデバイスの生体認証等を登録します。これで新しい端末でのログインが可能となります。</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -230,17 +258,14 @@
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingOne">
                             <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                Q. パスキー認証がうまく起動しない、または「パスキーが見つかりません」と表示される
+                                Q. パスワードでログインすることはできますか？
                             </button>
                         </h2>
                         <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#otherFaqAccordion">
                             <div class="accordion-body text-muted small">
-                                <p class="mb-2">いくつかの原因が考えられます。</p>
-                                <ol class="ps-3 mb-0">
-                                    <li class="mb-1"><strong>BluetoothがOFFになっている:</strong> パスワードマネージャーやスマホとPCの同期にBluetoothを使用する場合があります。端末のBluetoothをONにしてください。</li>
-                                    <li class="mb-1"><strong>ブラウザのシークレットモードを使用している:</strong> シークレットモード（プライベートブラウズ）では、パスキーが利用できない場合があります。通常のウインドウでお試しください。</li>
-                                    <li class="mb-1"><strong>別のデバイスのパスキーを使用したい場合:</strong> 認証ダイアログが表示された際に「別のデバイスを使用」または「他のオプション」を選択し、表示されたQRコードをスマホ等で読み取ることで、他のデバイスのパスキーでログインできます。</li>
-                                </ol>
+                                <p class="mb-0">
+                                    いいえ、できません。当システムはセキュリティ強化のためパスワードによるログイン機能を完全に廃止しております。ログインには必ず有効なパスキーの登録が必要です。
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -249,15 +274,17 @@
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingTwo">
                             <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                Q. パスワード入力でログインしたい
+                                Q. パスキー認証がうまく起動しない、または「パスキーが見つかりません」と表示される
                             </button>
                         </h2>
                         <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#otherFaqAccordion">
                             <div class="accordion-body text-muted small">
-                                <p class="mb-0">
-                                    ログイン画面でメールアドレスを入力後、<strong>「次へ」</strong>をクリックしてください。パスキー認証が起動した場合はそれを<strong>キャンセル</strong>（またはダイアログを閉じる）すると、パスワードの入力フォームが表示されます。
-                                    そのまま従来のパスワードを使用してログインが可能です。
-                                </p>
+                                <p class="mb-2">いくつかの原因が考えられます。</p>
+                                <ol class="ps-3 mb-0">
+                                    <li class="mb-1"><strong>BluetoothがOFFになっている:</strong> スマートフォンとPC間でBluetooth連携を行いパスキーを認証する仕組みがあります。双方の端末のBluetoothをONにしてください。</li>
+                                    <li class="mb-1"><strong>ブラウザのシークレットモードを使用している:</strong> シークレットモード（プライベートブラウズ）では、安全上の仕様でパスキーが利用できない場合があります。通常のウインドウでお試しください。</li>
+                                    <li class="mb-1"><strong>ログインID（メールアドレス）が間違っている:</strong> メールアドレスが当システムに登録されているものと完全一致しているか確認してください。</li>
+                                </ol>
                             </div>
                         </div>
                     </div>
@@ -266,14 +293,16 @@
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingThree">
                             <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                Q. 機種変更やデバイスを紛失した場合はどうすればいいですか？
+                                Q. 機種変更やデバイスを紛失した、または複数のデバイスでログインしたい
                             </button>
                         </h2>
                         <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#otherFaqAccordion">
                             <div class="accordion-body text-muted small">
+                                <p class="mb-2">
+                                    お使いのデバイス（スマホやPC）間で「iCloudキーチェーン」や「Googleパスワードマネージャー」によるパスキーのマルチデバイス同期が有効になっている場合、特別な設定なしで新しい端末でもログインできます（マルチデバイス同期・ハイブリッド認証の詳細は当ページの「マルチデバイス同期について」もご参照ください）。
+                                </p>
                                 <p class="mb-0">
-                                    新しいデバイスに移行した場合、古いデバイスのパスキーは使えなくなります（iCloudやGoogleアカウントで自動同期されている場合を除く）。
-                                    システム管理者へ「デバイス変更に伴うパスキー再設定」を依頼してください。管理者が古いキーを無効化（削除）し、新しいデバイスで登録するためのワンタイムURLを発行します。
+                                    同期ができない環境の場合や、端末を紛失しシステムにログイン可能なデバイスが一切ない場合は、システム管理者へ連絡し、パスキー登録URLの再発行を依頼してください。管理者が再発行処理を行うと、セキュリティ確保のためデータベース上の古いキーは自動で一括削除され、新しい端末で登録できるようになります。
                                 </p>
                             </div>
                         </div>
