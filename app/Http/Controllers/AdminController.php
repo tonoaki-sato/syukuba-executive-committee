@@ -143,7 +143,8 @@ class AdminController extends Controller
 
         $registerUrl = route('passkey.register', ['token' => $token]);
 
-        return back()->with('status', 'session-created')
+        return redirect()->route('admin.users.index')
+            ->with('status', 'パスキー登録用セッションを発行しました。')
             ->with('session_user_name', $user->name)
             ->with('register_url', $registerUrl);
     }

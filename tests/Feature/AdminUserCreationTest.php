@@ -217,4 +217,31 @@ class AdminUserCreationTest extends TestCase
         $response = $this->actingAs($this->admin)->post(route('admin.users.store'), $postData);
         $response->assertSessionHasErrors(['password']);
     }
+
+    /**
+     * 管理者が既存会員のパスキー登録用セッション（URL）を再発行できることを検証
+     */
+    public function test_admin_can_reissue_passkey_session(): void
+    {
+        $response = $this->actingAs($this->admin)->post(route('admin.users.passkey-session', $this->generalUser));
+
+        $response->assertRedirect(route('admin.users.index'));
+        $response->assertSessionHas('status', 'パスキー登録用セッションを発行しました。');
+        $response->assertSessionHas('session_user_name', $this->generalUser->name);
+        $response->assertSessionHas('register_url');
+
+        // DBにセッションレコードが存在することを検証
+        $this->assertDatabaseHas('comittee_passkey_sessions', [
+            'user_id' => $this->generalUser->id,
+        ]);
+    }
+
+    /**
+     * 一般会員はパスキー登録用セッション（URL）を再発行できないことを検証
+     */
+    public function test_general_user_cannot_reissue_passkey_session(): void
+    {
+        $response = $this->actingAs($this->generalUser)->post(route('admin.users.passkey-session', $this->admin));
+        $response->assertStatus(403);
+    }
 }
