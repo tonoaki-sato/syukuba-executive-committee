@@ -108,11 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         // パスキーがある場合：パスキー認証ダイアログを起動
                         await executeWebAuthnLogin(email, csrfToken);
                     } else {
-                        // パスキーがない場合：パスワード入力フィールドを表示して「次へ」を隠す
-                        passwordField.classList.remove('d-none');
-                        nextButton.classList.add('d-none');
-                        submitButton.classList.remove('d-none');
-                        passwordInput.focus();
+                        // パスキーがない場合：エラーを表示
+                        showError('パスキーが登録されていません。管理者にパスキー登録URLの発行を依頼してください。');
                     }
                 } catch (err) {
                     showError(err.message);
@@ -236,12 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Conditional Auth Error (Expected on Cancel):', err);
             } else {
                 showError('認証がキャンセルされたか、失敗しました。: ' + err.message);
-                // パスキー認証失敗時のフォールバック：パスワード入力を表示
-                if (passwordField) {
-                    passwordField.classList.remove('d-none');
-                    if (nextButton) nextButton.classList.add('d-none');
-                    if (submitButton) submitButton.classList.remove('d-none');
-                }
             }
         } finally {
             // 状態のクリア
@@ -389,28 +380,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 5. 新規会員直接追加画面でのパスワード自動生成切り替え
-    const autoGenerateCheckbox = document.getElementById('auto_generate_password');
-    const passwordFieldsContainer = document.getElementById('password-fields-container');
-    if (autoGenerateCheckbox && passwordFieldsContainer) {
-        const togglePasswordFields = () => {
-            const passwordInputs = passwordFieldsContainer.querySelectorAll('input');
-            if (autoGenerateCheckbox.checked) {
-                passwordFieldsContainer.classList.add('d-none');
-                passwordInputs.forEach(input => {
-                    input.removeAttribute('required');
-                    input.value = '';
-                });
-            } else {
-                passwordFieldsContainer.classList.remove('d-none');
-                passwordInputs.forEach(input => {
-                    input.setAttribute('required', 'required');
-                });
-            }
-        };
-        
-        autoGenerateCheckbox.addEventListener('change', togglePasswordFields);
-        // 初期起動時に状態を同期
-        togglePasswordFields();
-    }
+
 });

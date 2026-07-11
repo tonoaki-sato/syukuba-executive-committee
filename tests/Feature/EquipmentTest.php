@@ -35,7 +35,7 @@ class EquipmentTest extends TestCase
         // 1. システム管理者
         $this->adminUser = User::create([
             'name' => '管理者', 'name_kana' => 'かんりしゃ', 'email' => 'admin@example.com',
-            'password' => bcrypt('password'), 'profession' => 'IT', 'line_display_name' => 'admin_line',
+            'profession' => 'IT', 'line_display_name' => 'admin_line',
             'roles' => ['admin', 'general'], 'status' => 'active',
         ]);
         UserYear::create([
@@ -46,7 +46,7 @@ class EquipmentTest extends TestCase
         // 2. 幹事
         $this->kanjiUser = User::create([
             'name' => '幹事', 'name_kana' => 'かんじ', 'email' => 'kanji@example.com',
-            'password' => bcrypt('password'), 'profession' => '店主', 'line_display_name' => 'kanji_line',
+            'profession' => '店主', 'line_display_name' => 'kanji_line',
             'roles' => ['kanji', 'general'], 'status' => 'active',
         ]);
         UserYear::create([
@@ -57,7 +57,7 @@ class EquipmentTest extends TestCase
         // 3. 新設：備品管理者
         $this->managerUser = User::create([
             'name' => '備品管理', 'name_kana' => 'びひんかんり', 'email' => 'manager@example.com',
-            'password' => bcrypt('password'), 'profession' => 'イベント', 'line_display_name' => 'manager_line',
+            'profession' => 'イベント', 'line_display_name' => 'manager_line',
             'roles' => ['equipment_manager', 'general'], 'status' => 'active',
         ]);
         UserYear::create([
@@ -68,7 +68,7 @@ class EquipmentTest extends TestCase
         // 4. 一般会員
         $this->generalUser = User::create([
             'name' => '一般', 'name_kana' => 'いっぱん', 'email' => 'general@example.com',
-            'password' => bcrypt('password'), 'profession' => '一般', 'line_display_name' => 'general_line',
+            'profession' => '一般', 'line_display_name' => 'general_line',
             'roles' => ['general'], 'status' => 'active',
         ]);
         UserYear::create([
@@ -79,7 +79,7 @@ class EquipmentTest extends TestCase
         // 5. 仮登録
         $this->temporaryUser = User::create([
             'name' => '仮登録', 'name_kana' => 'かりとうろく', 'email' => 'temporary@example.com',
-            'password' => bcrypt('password'), 'profession' => '一般', 'line_display_name' => 'temp_line',
+            'profession' => '一般', 'line_display_name' => 'temp_line',
             'roles' => ['general'], 'status' => 'temporary',
         ]);
     }

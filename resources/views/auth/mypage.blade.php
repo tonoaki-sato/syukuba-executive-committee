@@ -90,39 +90,7 @@
             
             <!-- 右カラム: パスワード変更 & パスキー確認 -->
             <div class="col-lg-6 mb-4">
-                <!-- パスワード変更カード -->
-                <div class="card p-4 shadow-sm border-0 mb-4">
-                    <h5 class="fw-bold text-secondary-color border-bottom pb-2 mb-3">🔑 パスワードの変更</h5>
-                    
-                    @if ($errors->any())
-                        <div class="alert alert-danger" role="alert">
-                            <ul class="mb-0 small">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
 
-                    <form action="{{ route('mypage.password') }}" method="POST">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="current_password" class="form-label small fw-semibold">現在のパスワード</label>
-                            <input type="password" name="current_password" id="current_password" class="form-control border-secondary-subtle" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label small fw-semibold">新しいパスワード</label>
-                            <input type="password" name="password" id="password" class="form-control border-secondary-subtle" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password_confirmation" class="form-label small fw-semibold">新しいパスワード（確認用）</label>
-                            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control border-secondary-subtle" required>
-                        </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">パスワードを変更する</button>
-                        </div>
-                    </form>
-                </div>
                 
                 <!-- 登録済みのパスキー一覧 (閲覧のみ) -->
                 <div class="card p-4 shadow-sm border-0">

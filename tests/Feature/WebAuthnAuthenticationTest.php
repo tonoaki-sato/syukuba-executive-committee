@@ -30,7 +30,6 @@ class WebAuthnAuthenticationTest extends TestCase
             'name' => '一般 会員',
             'name_kana' => 'いっぱん かいいん',
             'email' => 'member@example.com',
-            'password' => bcrypt('password123'),
             'profession' => '自営業',
             'line_display_name' => 'member_line',
             'roles' => ['general'],
@@ -41,7 +40,6 @@ class WebAuthnAuthenticationTest extends TestCase
             'name' => '管理者 太郎',
             'name_kana' => 'かんりしゃ たろう',
             'email' => 'admin@example.com',
-            'password' => bcrypt('password123'),
             'profession' => 'エンジニア',
             'line_display_name' => 'admin_line',
             'roles' => ['admin', 'general'],
@@ -52,7 +50,6 @@ class WebAuthnAuthenticationTest extends TestCase
             'name' => '仮 会員',
             'name_kana' => 'かり かいいん',
             'email' => 'temporary@example.com',
-            'password' => bcrypt('password123'),
             'profession' => '会社員',
             'line_display_name' => 'temp_line',
             'roles' => ['general'],
@@ -63,7 +60,6 @@ class WebAuthnAuthenticationTest extends TestCase
             'name' => '休会 会員',
             'name_kana' => 'きゅうかい かいいん',
             'email' => 'suspended@example.com',
-            'password' => bcrypt('password123'),
             'profession' => '無職',
             'line_display_name' => 'suspended_line',
             'roles' => ['general'],
@@ -529,5 +525,51 @@ class WebAuthnAuthenticationTest extends TestCase
         $response->assertStatus(200)
             ->assertSee('パスキーのトラブルシューティング')
             ->assertSee('重複して表示される場合の対処方法');
+    }
+
+    /**
+     * Artisanコマンド passkey:issue-url の動作検証
+     */
+    public function test_artisan_passkey_issue_url_success(): void
+    {
+        // 既存のキーを作成しておく
+        $credentialId = 'dummy-credential-id-for-artisan-test';
+        WebAuthnKey::create([
+            'user_id' => $this->user->id,
+            'credential_id' => $credentialId,
+            'public_key' => 'dummy-public-key',
+            'device_name' => 'Test Device',
+        ]);
+
+        $this->assertDatabaseHas('comittee_webauthn_keys', [
+            'user_id' => $this->user->id,
+            'credential_id' => $credentialId,
+        ]);
+
+        // コマンドを実行
+        $this->artisan('passkey:issue-url', ['--email' => 'member@example.com'])
+            ->expectsOutputToContain('パスキー登録用URLの発行に成功しました')
+            ->assertExitCode(0);
+
+        // 既存のキーが削除されたことを検証
+        $this->assertDatabaseMissing('comittee_webauthn_keys', [
+            'user_id' => $this->user->id,
+            'credential_id' => $credentialId,
+        ]);
+
+        // ワンタイムセッションが発行されたことを検証
+        $this->assertDatabaseHas('comittee_passkey_sessions', [
+            'user_id' => $this->user->id,
+        ]);
+    }
+
+    /**
+     * Artisanコマンド passkey:issue-url の異常系検証（ユーザー不在）
+     */
+    public function test_artisan_passkey_issue_url_fail_user_not_found(): void
+    {
+        $this->artisan('passkey:issue-url', ['--email' => 'notfound@example.com'])
+            ->expectsOutputToContain('指定されたメールアドレスのユーザーが存在しません')
+            ->assertExitCode(1);
     }
 }

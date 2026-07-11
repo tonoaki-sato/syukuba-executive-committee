@@ -24,7 +24,6 @@ class AdminUserCreationTest extends TestCase
             'name' => '管理者 太郎',
             'name_kana' => 'かんりしゃ たろう',
             'email' => 'admin@example.com',
-            'password' => bcrypt('password123'),
             'profession' => 'エンジニア',
             'line_display_name' => 'admin_line',
             'roles' => ['admin'],
@@ -36,7 +35,6 @@ class AdminUserCreationTest extends TestCase
             'name' => '一般 次郎',
             'name_kana' => 'いっぱん じろう',
             'email' => 'general@example.com',
-            'password' => bcrypt('password123'),
             'profession' => '自営業',
             'line_display_name' => 'general_line',
             'roles' => ['general'],
@@ -80,15 +78,14 @@ class AdminUserCreationTest extends TestCase
     }
 
     /**
-     * 管理者がユーザーを自動パスワード生成で直接追加できることを検証
+     * 管理者がユーザーを直接追加できることを検証
      */
-    public function test_admin_can_store_user_with_auto_generated_password(): void
+    public function test_admin_can_store_user(): void
     {
         $postData = [
             'name' => '新規 メンバー',
             'name_kana' => 'しんき めんばー',
             'email' => 'newmember@example.com',
-            'auto_generate_password' => '1',
             'profession' => '会社員',
             'affiliation' => '〇〇商店街',
             'skills' => ['電気工事', '調理・衛生'],
@@ -103,7 +100,6 @@ class AdminUserCreationTest extends TestCase
         $response->assertSessionHas('status');
         $response->assertSessionHas('register_url');
         $response->assertSessionHas('session_user_name', '新規 メンバー');
-        $response->assertSessionHas('temporary_password');
 
         // データベースにユーザーが正しく保存されたことを検証
         $this->assertDatabaseHas('comittee_users', [
@@ -142,32 +138,7 @@ class AdminUserCreationTest extends TestCase
         $this->assertFalse($passkeySession->isExpired());
     }
 
-    /**
-     * 管理者がユーザーを手動パスワード指定で直接追加できることを検証
-     */
-    public function test_admin_can_store_user_with_manual_password(): void
-    {
-        $postData = [
-            'name' => '手動 パスユーザー',
-            'name_kana' => 'しゅどう ぱすゆーざー',
-            'email' => 'manualpass@example.com',
-            'password' => 'securePassword123',
-            'password_confirmation' => 'securePassword123',
-            'profession' => '自営業',
-            'line_display_name' => 'manual_pass_line',
-            'roles' => ['general'],
-        ];
 
-        $response = $this->actingAs($this->admin)->post(route('admin.users.store'), $postData);
-
-        $response->assertRedirect(route('admin.users.index'));
-        $response->assertSessionHas('status');
-        $response->assertSessionHas('temporary_password', 'securePassword123');
-
-        // パスワードが一致するか検証
-        $createdUser = User::where('email', 'manualpass@example.com')->first();
-        $this->assertTrue(\Hash::check('securePassword123', $createdUser->password));
-    }
 
     /**
      * バリデーションエラーの検証
@@ -202,20 +173,7 @@ class AdminUserCreationTest extends TestCase
         $response = $this->actingAs($this->admin)->post(route('admin.users.store'), $postData);
         $response->assertSessionHasErrors(['email']);
 
-        // 3. 手動パスワード時の確認不一致
-        $postData = [
-            'name' => '不一致 三郎',
-            'name_kana' => 'ふいっち さぶろう',
-            'email' => 'mismatch@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'mismatch_pass',
-            'profession' => '自営業',
-            'line_display_name' => 'mismatch_line',
-            'roles' => ['general'],
-        ];
 
-        $response = $this->actingAs($this->admin)->post(route('admin.users.store'), $postData);
-        $response->assertSessionHasErrors(['password']);
     }
 
     /**
@@ -223,6 +181,20 @@ class AdminUserCreationTest extends TestCase
      */
     public function test_admin_can_reissue_passkey_session(): void
     {
+        // 既存のキーを作成しておく
+        $credentialId = 'dummy-credential-id-for-reissue-test';
+        \App\Models\WebAuthnKey::create([
+            'user_id' => $this->generalUser->id,
+            'credential_id' => $credentialId,
+            'public_key' => 'dummy-public-key',
+            'device_name' => 'Test Device',
+        ]);
+
+        $this->assertDatabaseHas('comittee_webauthn_keys', [
+            'user_id' => $this->generalUser->id,
+            'credential_id' => $credentialId,
+        ]);
+
         $response = $this->actingAs($this->admin)->post(route('admin.users.passkey-session', $this->generalUser));
 
         $response->assertRedirect(route('admin.users.index'));
@@ -233,6 +205,12 @@ class AdminUserCreationTest extends TestCase
         // DBにセッションレコードが存在することを検証
         $this->assertDatabaseHas('comittee_passkey_sessions', [
             'user_id' => $this->generalUser->id,
+        ]);
+
+        // 既存のキーが自動的に削除されたことを検証
+        $this->assertDatabaseMissing('comittee_webauthn_keys', [
+            'user_id' => $this->generalUser->id,
+            'credential_id' => $credentialId,
         ]);
     }
 

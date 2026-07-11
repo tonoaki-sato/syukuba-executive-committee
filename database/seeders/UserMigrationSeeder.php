@@ -429,7 +429,6 @@ class UserMigrationSeeder extends Seeder
                 [
                     'name' => $name,
                     'name_kana' => $kana,
-                    'password' => app()->environment('testing') ? bcrypt('password') : $row['password'], // テスト環境ではハッシュエラー回避のためダミー、通常は引き継ぎ
                     'profession' => $profession,
                     'affiliation' => null,
                     'skills' => null,

@@ -40,26 +40,15 @@
                            autocomplete="username webauthn" autofocus>
                 </div>
 
-                <!-- パスワード入力（初期状態は非表示、パスキーがない場合のみJSで表示） -->
-                <div id="password-field" class="mb-4 d-none">
-                    <label for="password-input" class="form-label fw-semibold small">パスワード</label>
-                    <input type="password" name="password" id="password-input" class="form-control form-control-lg border-secondary-subtle" 
-                           placeholder="••••••••" autocomplete="current-password">
-                </div>
-
                 <!-- ログインボタン制御 -->
                 <div class="d-grid gap-2 mb-4">
-                    <!-- 「次へ」ボタン (パスキー有無判定) -->
+                    <!-- メールアドレス検証＆パスキーログイン起動ボタン -->
                     <button type="button" id="btn-next" class="btn btn-primary btn-lg">
-                        次へ
+                        ログイン
                     </button>
                     <!-- パスキーで直接ログインするボタン -->
                     <button type="button" id="btn-passkey-login" class="btn btn-outline-primary btn-lg">
-                        パスキーでログイン
-                    </button>
-                    <!-- パスワード認証用送信ボタン (初期非表示) -->
-                    <button type="submit" id="btn-submit" class="btn btn-primary btn-lg d-none">
-                        ログイン
+                        保存されたパスキーを選択してログイン
                     </button>
                 </div>
             </form>
@@ -89,7 +78,7 @@
 
                             <div class="fw-bold mb-2 text-dark">🛡️ パスキーを未登録、または利用できない場合:</div>
                             <p class="mb-3">
-                                メールアドレスを入力して「次へ」をクリックし、従来通り「パスワードを入力してログイン」を行ってください。
+                                パスキーの登録がお済みでない場合はログインできません。システム管理者に連絡し、「パスキー登録URL」の発行を依頼してください。
                             </p>
 
                             <div class="mt-3 pt-2 border-top">

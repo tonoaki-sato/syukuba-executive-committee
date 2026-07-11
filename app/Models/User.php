@@ -17,7 +17,6 @@ use Illuminate\Notifications\Notifiable;
     'name',
     'name_kana',
     'email',
-    'password',
     'profession',
     'affiliation',
     'skills',
@@ -29,7 +28,7 @@ use Illuminate\Notifications\Notifiable;
     'approved_by',
     'approved_at'
 ])]
-#[Hidden(['password', 'remember_token'])]
+#[Hidden(['remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -50,7 +49,6 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'password' => 'hashed',
             'skills' => 'array',
             'roles' => 'array',
             'approved_at' => 'datetime',

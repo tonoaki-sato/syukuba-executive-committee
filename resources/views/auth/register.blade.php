@@ -44,16 +44,7 @@
                     <div class="form-text small">承認完了後にこのアドレスがログインIDとなります。</div>
                 </div>
 
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label for="password" class="form-label fw-semibold small">パスワード <span class="text-danger">*</span></label>
-                        <input type="password" name="password" id="password" class="form-control border-secondary-subtle" placeholder="半角英数字8文字以上" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="password_confirmation" class="form-label fw-semibold small">パスワード（確認用） <span class="text-danger">*</span></label>
-                        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control border-secondary-subtle" placeholder="もう一度入力してください" required>
-                    </div>
-                </div>
+
 
                 <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">2. 身元と紹介関係（出自の明確化）</h5>
 

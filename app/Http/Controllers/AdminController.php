@@ -77,7 +77,6 @@ class AdminController extends Controller
         Log::info("{$user->name} 様\n");
         Log::info("実行委員会への登録が承認されました。以下のURLより、24時間以内にログイン用パスキー（指紋・顔認証）の設定を行ってください。");
         Log::info("パスキー設定URL: {$registerUrl}");
-        Log::info("※初期パスワードでもログインできますが、セキュリティのためパスキーの登録を強く推奨します。");
         Log::info("==================================");
 
         return redirect()->route('admin.users.pending')->with('status', 'user-approved')
@@ -129,6 +128,9 @@ class AdminController extends Controller
         if ($user->status !== 'active') {
             return back()->with('error', 'アクティブなユーザーのみパスキーを追加登録できます。');
         }
+
+        // 安全性確保のため、再登録用トークンを発行する時点で既存のパスキー情報は即座にすべて削除する
+        WebAuthnKey::where('user_id', $user->id)->delete();
 
         // 古いセッションがあれば削除
         PasskeySession::where('user_id', $user->id)->delete();
@@ -315,9 +317,6 @@ class AdminController extends Controller
             'name' => ['required', 'string', 'max:50'],
             'name_kana' => ['required', 'string', 'max:100', 'regex:/^[ぁ-んー ]+$/u'], // ひらがなのみ
             'email' => ['required', 'string', 'email', 'max:255', 'unique:comittee_users,email'],
-            'password' => $request->boolean('auto_generate_password') 
-                ? ['nullable'] 
-                : ['required', 'string', 'min:8', 'confirmed'],
             'profession' => ['required', 'string', 'max:100'],
             'affiliation' => ['nullable', 'string', 'max:100'],
             'skills' => ['nullable', 'array'],
@@ -330,17 +329,11 @@ class AdminController extends Controller
             'name_kana.regex' => '氏名（かな）はひらがなで入力してください。',
         ]);
 
-        // パスワード自動生成判定
-        $rawPassword = $request->boolean('auto_generate_password') 
-            ? Str::random(12) 
-            : $request->input('password');
-
-        $result = \DB::transaction(function() use ($request, $rawPassword) {
+        $result = \DB::transaction(function() use ($request) {
             $user = new User();
             $user->name = $request->input('name');
             $user->name_kana = $request->input('name_kana');
             $user->email = $request->input('email');
-            $user->password = \Hash::make($rawPassword);
             $user->profession = $request->input('profession');
             $user->affiliation = $request->input('affiliation');
             $user->skills = $request->input('skills', []);
@@ -386,38 +379,14 @@ class AdminController extends Controller
         Log::info("Body: ");
         Log::info("{$result['user']->name} 様\n");
         Log::info("管理者によって実行委員会システムのアカウントが作成されました。");
-        Log::info("初期パスワード: {$rawPassword}");
         Log::info("以下のURLより、24時間以内にログイン用パスキー（指紋・顔認証）の設定を行ってください。");
         Log::info("パスキー設定URL: {$registerUrl}");
         Log::info("======================================");
 
         return redirect()->route('admin.users.index')
-            ->with('status', 'ユーザーを追加しました。一時パスワードとパスキー追加URLを対象者に共有してください。')
+            ->with('status', 'ユーザーを追加しました。対象者にパスキー設定用URLを共有してください。')
             ->with('register_url', $registerUrl)
-            ->with('session_user_name', $result['user']->name)
-            ->with('temporary_password', $rawPassword);
-    }
-
-    /**
-     * 管理者による他ユーザーのパスワード変更実行
-     */
-    public function updateUserPassword(Request $request, User $user)
-    {
-        // 自分自身のパスワード変更はここでは禁止 (MyPageから行うように制御)
-        if ($user->id === Auth::id()) {
-            return back()->with('error', '自分自身のパスワードはマイページから変更してください。');
-        }
-
-        $request->validate([
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
-        $user->password = \Hash::make($request->input('password'));
-        $user->save();
-
-        Log::info("管理者 (ID: " . Auth::id() . ") がユーザー " . $user->name . " (ID: " . $user->id . ") のパスワードを強制リセットしました。");
-
-        return back()->with('status', 'ユーザーのパスワードを正常に更新しました。');
+            ->with('session_user_name', $result['user']->name);
     }
 
     /**

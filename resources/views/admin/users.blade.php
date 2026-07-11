@@ -22,21 +22,9 @@
         @if(session('register_url'))
             <div class="card border-primary border-2 shadow-sm mb-4">
                 <div class="card-header bg-primary text-white py-3 fw-bold">
-                    @if(session('temporary_password'))
-                        ➕ 会員「{{ session('session_user_name') }}」を直接追加しました
-                    @else
-                        🔑 会員「{{ session('session_user_name') }}」のパスキー追加登録セッションを発行しました
-                    @endif
+                    ➕ 会員「{{ session('session_user_name') }}」のパスキー登録セッションを開始しました
                 </div>
                 <div class="card-body">
-                    @if(session('temporary_password'))
-                        <div class="alert alert-success py-2.5 mb-3 small" role="alert">
-                            <strong>🔑 初期ログイン用パスワード：</strong>
-                            <code class="fs-6 fw-bold px-2 py-1 bg-light border rounded text-danger">{{ session('temporary_password') }}</code>
-                            <span class="ms-2 text-muted">※一度画面を閉じると再表示できません。必ず控えてください。</span>
-                        </div>
-                    @endif
-
                     <p class="small text-dark fw-semibold mb-2">ログインおよびパスキー設定用のワンタイムURLです：</p>
                     
                     <div class="input-group mb-3">

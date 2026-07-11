@@ -26,47 +26,7 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    /**
-     * パスワードログイン処理
-     */
-    public function postLogin(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            $user = Auth::user();
-
-            // 仮会員ステータスチェック（ロックアウト）
-            if ($user->status === 'temporary') {
-                return redirect()->route('register.pending');
-            }
-
-            // アカウントが無効なステータス
-            if (in_array($user->status, ['suspended', 'expelled', 'rejected'])) {
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-                return back()->withErrors([
-                    'email' => 'このアカウントは現在ご利用いただけません。',
-                ]);
-            }
-
-            // デフォルトの開催年（年度）をセッションにセット（現在年をデフォルトにする）
-            if (!session()->has('active_fiscal_year')) {
-                session(['active_fiscal_year' => date('Y')]);
-            }
-
-            return redirect()->intended(route('dashboard'));
-        }
-
-        return back()->withErrors([
-            'email' => 'メールアドレスまたはパスワードが正しくありません。',
-        ])->onlyInput('email');
-    }
 
     /**
      * 登録申請（仮登録）画面表示
@@ -87,7 +47,6 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:50'],
             'name_kana' => ['required', 'string', 'max:100', 'regex:/^[ぁ-んー\s]+$/u'], // ひらがなとスペースのみ
             'email' => ['required', 'string', 'email', 'max:255', 'unique:comittee_users'],
-            'password' => ['required', 'confirmed', Password::defaults()],
             'profession' => ['required', 'string', 'max:100'],
             'affiliation' => ['nullable', 'string', 'max:100'],
             'skills' => ['nullable', 'array'],
@@ -106,7 +65,6 @@ class AuthController extends Controller
             'name' => $request->name,
             'name_kana' => $request->name_kana,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
             'profession' => $request->profession,
             'affiliation' => $request->affiliation,
             'skills' => $skills,
@@ -172,23 +130,7 @@ class AuthController extends Controller
         return view('auth.mypage', compact('user'));
     }
 
-    /**
-     * パスワード自己変更
-     */
-    public function postPassword(Request $request)
-    {
-        $request->validate([
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', 'confirmed', Password::defaults()],
-        ]);
 
-        $user = Auth::user();
-        $user->update([
-            'password' => Hash::make($request->password),
-        ]);
-
-        return back()->with('status', 'password-updated');
-    }
 
     /**
      * ユーザー詳細プロフィールの表示

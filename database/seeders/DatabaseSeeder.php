@@ -21,7 +21,6 @@ class DatabaseSeeder extends Seeder
             'name' => 'システム 管理者',
             'name_kana' => 'しすてむ かんりしゃ',
             'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
             'profession' => '事務局長（ITサポート）',
             'affiliation' => '宿場まつり事務局',
             'skills' => ['事務・会計', '広報・デザイン'],

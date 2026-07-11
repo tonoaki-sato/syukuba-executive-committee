@@ -43,25 +43,7 @@
                     <input type="email" name="email" id="email" class="form-control border-secondary-subtle" value="{{ old('email') }}" placeholder="tarou@example.com" required>
                 </div>
 
-                <div class="mb-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="auto_generate_password" id="auto_generate_password" value="1" {{ old('auto_generate_password', '1') == '1' ? 'checked' : '' }}>
-                        <label class="form-check-label fw-semibold small" for="auto_generate_password">
-                            初期パスワードを自動生成する（推奨）
-                        </label>
-                    </div>
-                </div>
 
-                <div class="row mb-4 d-none" id="password-fields-container">
-                    <div class="col-md-6">
-                        <label for="password" class="form-label fw-semibold small">パスワード <span class="text-danger">*</span></label>
-                        <input type="password" name="password" id="password" class="form-control border-secondary-subtle" placeholder="半角英数字8文字以上">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="password_confirmation" class="form-label fw-semibold small">パスワード（確認用） <span class="text-danger">*</span></label>
-                        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control border-secondary-subtle" placeholder="もう一度入力してください">
-                    </div>
-                </div>
 
                 <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">2. 身元と紹介関係（出自の明確化）</h5>
 

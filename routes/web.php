@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest')->group(function () {
     // ログイン
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'postLogin']);
 
     // 新規登録申請（仮登録）
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -40,7 +39,6 @@ Route::middleware(['auth', 'approved'])->group(function () {
     Route::get('/mypage', [AuthController::class, 'showMyPage'])->name('mypage');
     Route::get('/mypage/edit', [AuthController::class, 'editMyPage'])->name('mypage.edit');
     Route::put('/mypage', [AuthController::class, 'updateMyPage'])->name('mypage.update');
-    Route::post('/mypage/password', [AuthController::class, 'postPassword'])->name('mypage.password');
     Route::get('/users/{user}', [AuthController::class, 'showUserDetail'])->name('users.show');
 
     // 開催年度の切り替え（グローバルコンテキスト）
@@ -51,14 +49,7 @@ Route::middleware(['auth', 'approved'])->group(function () {
     Route::get('/meetings/show/{meeting}', [MeetingController::class, 'show'])->name('meetings.show');
     Route::post('/meetings/{meeting}/attendance', [MeetingController::class, 'updateAttendance'])->name('meetings.attendance');
 
-    // 管理者から発行されたワンタイムURLによるパスキーの登録画面
-    Route::get('/passkey/register/{token}', function ($token) {
-        return view('auth.passkey_register', compact('token'));
-    })->name('passkey.register');
 
-    // ログイン状態での追加パスキー登録用チャレンジAPI (非同期)
-    Route::post('/webauthn/register/challenge', [WebAuthnController::class, 'getRegisterChallenge']);
-    Route::post('/webauthn/register/verify', [WebAuthnController::class, 'postRegisterVerify']);
 
     // 文書管理
     Route::get('/documents', [\App\Http\Controllers\DocumentController::class, 'index'])->name('documents.index');
@@ -86,7 +77,6 @@ Route::middleware(['auth', 'approved', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/users/create', [AdminController::class, 'createUser'])->name('users.create');
     Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
     Route::post('/users/{user}/passkey-session', [AdminController::class, 'createPasskeySession'])->name('users.passkey-session');
-    Route::post('/users/{user}/password', [AdminController::class, 'updateUserPassword'])->name('users.password-update');
     Route::delete('/users/{user}/passkey/{key}', [AdminController::class, 'deletePasskey'])->name('users.passkey-delete');
     Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('users.edit');
     Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
@@ -176,6 +166,14 @@ Route::middleware(['auth', 'approved'])->prefix('equipment')->name('equipment.')
         Route::put('/rental-summary', [\App\Http\Controllers\EquipmentController::class, 'updateRentalSummary'])->name('rental-summary.update');
     });
 });
+
+// パスキーの新規登録（未ログイン・ワンタイムトークン経由）およびログイン中の追加登録
+Route::get('/passkey/register/{token}', function ($token) {
+    return view('auth.passkey_register', compact('token'));
+})->name('passkey.register');
+
+Route::post('/webauthn/register/challenge', [WebAuthnController::class, 'getRegisterChallenge']);
+Route::post('/webauthn/register/verify', [WebAuthnController::class, 'postRegisterVerify']);
 
 // パスキーのトラブルシューティングページ
 Route::get('/passkey/troubleshooting', [WebAuthnController::class, 'showTroubleshooting'])->name('passkey.troubleshooting');

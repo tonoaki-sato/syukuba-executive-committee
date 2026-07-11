@@ -205,35 +205,7 @@
                         </form>
                     </div>
 
-                    <h6 class="fw-bold text-dark mb-2">🔑 パスワードの強制変更</h6>
-                    <p class="text-muted small mb-3">対象ユーザーのログイン用パスワードを強制的に上書き変更します。（現在のパスワードの入力は不要です）</p>
 
-                    @if ($errors->any())
-                        <div class="alert alert-danger py-2 mb-3" role="alert">
-                            <ul class="mb-0 small">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    <form action="{{ route('admin.users.password-update', $user) }}" method="POST" class="needs-validation" novalidate>
-                        @csrf
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label for="password" class="form-label small fw-semibold">新しいパスワード</label>
-                                <input type="password" name="password" id="password" class="form-control border-secondary-subtle" placeholder="半角英数字8文字以上" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="password_confirmation" class="form-label small fw-semibold">新しいパスワード（確認用）</label>
-                                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control border-secondary-subtle" placeholder="もう一度入力してください" required>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-sm px-4 fw-semibold">
-                            パスワードを変更する
-                        </button>
-                    </form>
                 </div>
             </div>
         @endif
