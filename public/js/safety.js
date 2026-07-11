@@ -82,4 +82,44 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     }
+
+    // モーダル表示時のMermaidレンダリング制御
+    const modalEl = document.getElementById('escalationFlowModal');
+    if (modalEl) {
+        modalEl.addEventListener('shown.bs.modal', function () {
+            console.log("[Safety debug] Modal shown, rendering modal Mermaid...");
+            const modalMermaidEl = document.getElementById('modal-mermaid-diagram');
+            const codeEl = document.getElementById('escalation-mermaid-code');
+            if (modalMermaidEl && codeEl && !modalMermaidEl.hasAttribute('data-processed')) {
+                modalMermaidEl.classList.add('mermaid');
+                modalMermaidEl.textContent = codeEl.value.trim();
+
+                mermaid.run({
+                    nodes: [modalMermaidEl]
+                }).catch(err => {
+                    console.error("Modal Mermaid rendering failed:", err);
+                });
+            }
+        });
+    }
+
+    // 避難指示発令時フロー モーダル表示時のMermaidレンダリング制御
+    const evacModalEl = document.getElementById('evacuationFlowModal');
+    if (evacModalEl) {
+        evacModalEl.addEventListener('shown.bs.modal', function () {
+            console.log("[Safety debug] Evacuation Modal shown, rendering modal Mermaid...");
+            const modalMermaidEl = document.getElementById('modal-evacuation-diagram');
+            const codeEl = document.getElementById('evacuation-mermaid-code');
+            if (modalMermaidEl && codeEl && !modalMermaidEl.hasAttribute('data-processed')) {
+                modalMermaidEl.classList.add('mermaid');
+                modalMermaidEl.textContent = codeEl.value.trim();
+
+                mermaid.run({
+                    nodes: [modalMermaidEl]
+                }).catch(err => {
+                    console.error("Evacuation Modal Mermaid rendering failed:", err);
+                });
+            }
+        });
+    }
 });

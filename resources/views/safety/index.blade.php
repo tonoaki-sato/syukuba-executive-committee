@@ -236,42 +236,52 @@ flowchart TD
             <div class="tab-pane fade" id="escalation" role="tabpanel" aria-labelledby="escalation-tab">
                 <div class="row">
                     <!-- 通信ツールプラン -->
-                    <div class="col-lg-6 mb-4">
-                        <div class="card p-4 shadow-sm border-0 h-100">
+                    <div class="col-12 mb-4">
+                        <div class="card p-4 shadow-sm border-0">
                             <h5 class="fw-bold text-secondary-color border-bottom pb-2 mb-3">5. 連絡体制（通信プラン）</h5>
-                            <p class="text-muted small">
+                            <p class="text-muted small mb-3">
                                 飛び地（100m先）があり、裏路地や校舎の影による電波遮蔽が懸念されるため、トランシーバー以外の通信手段を整備します。
                             </p>
                             
-                            <div class="card border-0 bg-light p-3 mb-3">
-                                <h6 class="fw-bold text-primary-color mb-2">📱 プランA：スマートフォンIP無線アプリの活用（推奨）</h6>
-                                <p class="small text-muted mb-2">
-                                    手持ちのスマートフォンに専用アプリ（Buddycom、Aldio、LiME等）をインストールし、有線・Bluetoothのイヤホンマイクを使用します。
-                                </p>
-                                <ul class="small mb-0 text-muted">
-                                    <li><strong>メリット:</strong> 4G/5G回線を使用するため、100m離れたキッズ村や裏路地、建物内でもクリアに通話可能。写真送信やGPS位置特定も容易。</li>
-                                    <li><strong>デメリット:</strong> データ通信量とバッテリー消費があるため、モバイルバッテリーの携行が必須。</li>
-                                </ul>
-                            </div>
-                            
-                            <div class="card border-0 bg-light p-3">
-                                <h6 class="fw-bold text-secondary-color mb-2">💬 プランB：ビジネスチャットの常時グループ通話</h6>
-                                <p class="small text-muted mb-2">
-                                    無料の既存ツール（LINE、Slack、Discord）の通話機能を使用します。
-                                </p>
-                                <ul class="small mb-0 text-muted">
-                                    <li><strong>メリット:</strong> 追加コストが不要。写真や地図（位置情報）の共有が非常に簡単。</li>
-                                    <li><strong>デメリット:</strong> 混雑時に回線が混み合うと接続が不安定になりやすい。バッテリー消費が非常に激しい。</li>
-                                </ul>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="card border-0 bg-light p-3 h-100">
+                                        <h6 class="fw-bold text-primary-color mb-2">📱 プランA：スマートフォンIP無線アプリの活用（推奨）</h6>
+                                        <p class="small text-muted mb-2">
+                                            手持ちのスマートフォンに専用アプリ（Buddycom、Aldio、LiME等）をインストールし、有線・Bluetoothのイヤホンマイクを使用します。
+                                        </p>
+                                        <ul class="small mb-0 text-muted">
+                                            <li><strong>メリット:</strong> 4G/5G回線を使用するため、100m離れたキッズ村や裏路地、建物内でもクリアに通話可能。写真送信やGPS位置特定も容易。</li>
+                                            <li><strong>デメリット:</strong> データ通信量とバッテリー消費があるため、モバイルバッテリーの携行が必須。</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card border-0 bg-light p-3 h-100">
+                                        <h6 class="fw-bold text-secondary-color mb-2">💬 プランB：ビジネスチャットの常時グループ通話</h6>
+                                        <p class="small text-muted mb-2">
+                                            無料の既存ツール（LINE、Slack、Discord）の通話機能を使用します。
+                                        </p>
+                                        <ul class="small mb-0 text-muted">
+                                            <li><strong>メリット:</strong> 追加コストが不要。写真や地図（位置情報）の共有が非常に簡単。</li>
+                                            <li><strong>デメリット:</strong> 混雑時に回線が混み合うと接続が不安定になりやすい。バッテリー消費が非常に激しい。</li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- エスカレーションフロー -->
-                    <div class="col-lg-6 mb-4">
-                        <div class="card p-4 shadow-sm border-0 h-100 mermaid-card">
-                            <h5 class="fw-bold text-secondary-color border-bottom pb-2 mb-3">6. 緊急時エスカレーションフロー</h5>
-                            <div class="mermaid-diagram text-center">
+                    <div class="col-12 mb-4">
+                        <div class="card p-4 shadow-sm border-0 mermaid-card">
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                                <h5 class="fw-bold text-secondary-color mb-0">6. 緊急時エスカレーションフロー</h5>
+                                <button type="button" class="btn btn-outline-primary btn-sm fw-semibold" data-bs-toggle="modal" data-bs-target="#escalationFlowModal">
+                                    🔍 拡大表示
+                                </button>
+                            </div>
+                            <div class="mermaid-diagram text-center overflow-auto py-2">
 flowchart TD
     Honjin["【本陣】<br>(統括・情報集約)"] &lt;--&gt;|"連絡ツール (一斉通話)"| PatA["巡回A班<br>(メイン南)"]
     Honjin &lt;--&gt;|"連絡ツール (一斉通話)"| PatB["巡回B班<br>(メイン北)"]
@@ -568,7 +578,12 @@ flowchart TD
                     <!-- 避難誘導体制図 -->
                     <div class="col-12 mb-4">
                         <div class="card p-4 shadow-sm border-0 mermaid-card">
-                            <h5 class="fw-bold text-secondary-color border-bottom pb-2 mb-3">避難指示発令時フロー</h5>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                                <h5 class="fw-bold text-secondary-color mb-0">避難指示発令時フロー</h5>
+                                <button type="button" class="btn btn-outline-primary btn-sm fw-semibold" data-bs-toggle="modal" data-bs-target="#evacuationFlowModal">
+                                    🔍 拡大表示
+                                </button>
+                            </div>
                             <div class="mermaid-diagram text-center">
 flowchart TD
     Honjin_Inst["【本陣】<br>避難指示・一斉放送"] --> PatA_Action["【巡回A班】<br>メイン南側を南側ゲート・側道へ誘導"]
@@ -587,8 +602,76 @@ flowchart TD
                     </div>
                     
                 </div>
+        </div>
+    </div>
+</div>
+
+<!-- 緊急時エスカレーションフロー 拡大表示モーダル -->
+<div class="modal fade" id="escalationFlowModal" tabindex="-1" aria-labelledby="escalationFlowModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light border-bottom">
+                <h5 class="modal-title fw-bold text-secondary-color" id="escalationFlowModalLabel">🚨 6. 緊急時エスカレーションフロー (拡大図)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            
+            <div class="modal-body bg-white p-4">
+                    <div class="mermaid-diagram-modal text-center" id="modal-mermaid-diagram" style="min-height: 380px;"></div>
+                    <textarea id="escalation-mermaid-code" class="d-none">
+flowchart TD
+    Honjin["【本陣】<br>(統括・情報集約)"] <-->|"連絡ツール (一斉通話)"| PatA["巡回A班<br>(メイン南)"]
+    Honjin <-->|"連絡ツール (一斉通話)"| PatB["巡回B班<br>(メイン北)"]
+    Honjin <-->|"連絡ツール (一斉通話)"| PatC["巡回C班<br>(キッズ・裏路地)"]
+    Honjin <-->|"連絡ツール (一斉通話)"| Aid["救護班<br>(救護所常駐)"]
+    
+    Honjin <-->|ホットライン| SecCompany["外部警備会社 現場責任者<br>(北側・南側ゲート窓口)"]
+    Honjin <-->|緊急通報| External["警察・消防・救急車"]
+
+    %% スタイル設定
+    style Honjin fill:#f8d7da,stroke:#f5c2c7,stroke-width:2px,color:#842029
+    style PatA fill:#d1e7dd,stroke:#badbcc,stroke-width:2px,color:#0f5132
+    style PatB fill:#d1e7dd,stroke:#badbcc,stroke-width:2px,color:#0f5132
+    style PatC fill:#cff4fc,stroke:#b6effb,stroke-width:2px,color:#055160
+    style Aid fill:#e2d9f3,stroke:#d2c4ec,stroke-width:2px,color:#563d7c
+    style External fill:#f8d7da,stroke:#f5c2c7,stroke-width:2px,color:#842029
+                    </textarea>
+            </div>
+            <div class="modal-footer bg-light border-top">
+                <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 避難指示発令時フロー 拡大表示モーダル -->
+<div class="modal fade" id="evacuationFlowModal" tabindex="-1" aria-labelledby="evacuationFlowModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light border-bottom">
+                <h5 class="modal-title fw-bold text-secondary-color" id="evacuationFlowModalLabel">🚨 避難指示発令時フロー (拡大図)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white p-4">
+                <div class="text-center overflow-auto">
+                    <div class="mermaid-diagram-modal text-center" id="modal-evacuation-diagram" style="min-height: 380px;"></div>
+                    <textarea id="evacuation-mermaid-code" class="d-none">
+flowchart TD
+    Honjin_Inst["【本陣】<br>避難指示・一斉放送"] --> PatA_Action["【巡回A班】<br>メイン南側を南側ゲート・側道へ誘導"]
+    Honjin_Inst --> PatB_Action["【巡回B班】<br>メイン北側を北側ゲートへ誘導"]
+    Honjin_Inst --> PatC_Action["【巡回C班】<br>キッズ村広場へ集約・安全確保"]
+    Honjin_Inst --> Gate_Action["【外部警備員（ゲート）】<br>バリケード撤去・通路完全開放"]
+    
+    %% スタイル設定
+    style Honjin_Inst fill:#f8d7da,stroke:#f5c2c7,stroke-width:2px,color:#842029
+    style PatA_Action fill:#d1e7dd,stroke:#badbcc,stroke-width:2px,color:#0f5132
+    style PatB_Action fill:#d1e7dd,stroke:#badbcc,stroke-width:2px,color:#0f5132
+    style PatC_Action fill:#cff4fc,stroke:#b6effb,stroke-width:2px,color:#055160
+    style Gate_Action fill:#e2e3e5,stroke:#d3d3d4,stroke-width:2px,color:#41464b
+                    </textarea>
+                </div>
+            </div>
+            <div class="modal-footer bg-light border-top">
+                <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">閉じる</button>
+            </div>
         </div>
     </div>
 </div>
