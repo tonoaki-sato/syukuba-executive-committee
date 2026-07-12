@@ -414,6 +414,15 @@ class WebAuthnAuthenticationTest extends TestCase
 
     public function test_register_verification_success(): void
     {
+        // 事前に古い鍵を登録しておく
+        $oldCredentialId = 'old-dummy-credential-id';
+        WebAuthnKey::create([
+            'user_id' => $this->user->id,
+            'credential_id' => $oldCredentialId,
+            'public_key' => 'old-dummy-public-key',
+            'device_name' => 'Old Device',
+        ]);
+
         $session = PasskeySession::create([
             'user_id' => $this->user->id,
             'token' => 'valid_token_xyz',
@@ -455,7 +464,7 @@ class WebAuthnAuthenticationTest extends TestCase
         $response->assertStatus(200)
             ->assertJson(['status' => 'success']);
 
-        // DBにWebAuthnKeyが登録されたことを検証
+        // DBに新しいWebAuthnKeyが登録されたことを検証
         $expectedCredId = $this->base64UrlEncode('cred_id_binary_xyz');
         $this->assertDatabaseHas('comittee_webauthn_keys', [
             'user_id' => $this->user->id,
@@ -464,6 +473,12 @@ class WebAuthnAuthenticationTest extends TestCase
             'device_name' => 'テスト仮想デバイス',
             'aaguid' => 'aaguid_xyz',
             'counter' => 5,
+        ]);
+
+        // 古い鍵が削除されたことを検証
+        $this->assertDatabaseMissing('comittee_webauthn_keys', [
+            'user_id' => $this->user->id,
+            'credential_id' => $oldCredentialId,
         ]);
 
         // トークンセッションが削除されたことを検証

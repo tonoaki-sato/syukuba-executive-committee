@@ -207,8 +207,8 @@ class AdminUserCreationTest extends TestCase
             'user_id' => $this->generalUser->id,
         ]);
 
-        // 既存のキーが自動的に削除されたことを検証
-        $this->assertDatabaseMissing('comittee_webauthn_keys', [
+        // 既存のキーが自動的には削除されないこと（新パスキー登録成功時に削除される仕様に変更）を検証
+        $this->assertDatabaseHas('comittee_webauthn_keys', [
             'user_id' => $this->generalUser->id,
             'credential_id' => $credentialId,
         ]);

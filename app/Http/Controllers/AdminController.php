@@ -129,9 +129,6 @@ class AdminController extends Controller
             return back()->with('error', 'アクティブなユーザーのみパスキーを追加登録できます。');
         }
 
-        // 安全性確保のため、再登録用トークンを発行する時点で既存のパスキー情報は即座にすべて削除する
-        WebAuthnKey::where('user_id', $user->id)->delete();
-
         // 古いセッションがあれば削除
         PasskeySession::where('user_id', $user->id)->delete();
 

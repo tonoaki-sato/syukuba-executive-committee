@@ -57,7 +57,7 @@ Route::middleware(['auth', 'approved'])->group(function () {
 });
 
 // --- 幹事 ＆ 管理者ルート（会議作成・議事録） ---
-Route::middleware(['auth', 'approved'])->group(function () {
+Route::middleware(['auth', 'approved', 'gozaichi'])->group(function () {
     // 幹事・管理者向け会議作成・議事録登録
     Route::get('/meetings/create', [MeetingController::class, 'create'])->name('meetings.create');
     Route::post('/meetings', [MeetingController::class, 'store'])->name('meetings.store');

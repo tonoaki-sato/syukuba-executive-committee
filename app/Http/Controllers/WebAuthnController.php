@@ -303,7 +303,7 @@ class WebAuthnController extends Controller
             }
 
             // DBに保存
-            WebAuthnKey::create([
+            $newKey = WebAuthnKey::create([
                 'user_id' => $user->id,
                 'credential_id' => $credentialId,
                 'public_key' => $publicKeyPEM,
@@ -314,6 +314,9 @@ class WebAuthnController extends Controller
 
             // ワンタイムセッションだった場合は削除
             if ($token) {
+                // 安全性確保のため、新しい鍵の登録成功時にのみ古いパスキー情報を削除する
+                WebAuthnKey::where('user_id', $user->id)->where('id', '!=', $newKey->id)->delete();
+
                 PasskeySession::where('token', $token)->delete();
                 session()->forget('webauthn_register_token');
             }
