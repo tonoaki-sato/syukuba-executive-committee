@@ -52,7 +52,7 @@ class MeetingController extends Controller
 
         $request->validate([
             'fiscal_year' => ['required', 'integer', 'min:2000', 'max:2100'],
-            'type' => ['required', 'in:board,general,subcommittee'],
+            'type' => ['required', 'in:board,general,subcommittee,work'],
             'name' => ['required', 'string', 'max:100'],
             'held_at' => ['required', 'date'],
             'location' => ['required', 'string', 'max:255'],
@@ -92,6 +92,48 @@ class MeetingController extends Controller
         }
 
         return redirect()->route('meetings.show', $meeting)->with('status', 'meeting-created');
+    }
+
+    /**
+     * 会議情報の編集画面表示 (管理者のみ)
+     */
+    public function edit(Meeting $meeting)
+    {
+        if (!Auth::user()->isSystemAdmin()) {
+            abort(403, '会議を編集する権限がありません。');
+        }
+
+        return view('meetings.edit', compact('meeting'));
+    }
+
+    /**
+     * 会議情報の更新処理 (管理者のみ)
+     */
+    public function update(Request $request, Meeting $meeting)
+    {
+        if (!Auth::user()->isSystemAdmin()) {
+            abort(403, '会議を編集する権限がありません。');
+        }
+
+        $request->validate([
+            'fiscal_year' => ['required', 'integer', 'min:2000', 'max:2100'],
+            'type' => ['required', 'in:board,general,subcommittee,work'],
+            'name' => ['required', 'string', 'max:100'],
+            'held_at' => ['required', 'date'],
+            'location' => ['required', 'string', 'max:255'],
+            'agenda' => ['nullable', 'string'],
+        ]);
+
+        $meeting->update([
+            'fiscal_year' => $request->fiscal_year,
+            'type' => $request->type,
+            'name' => $request->name,
+            'held_at' => $request->held_at,
+            'location' => $request->location,
+            'agenda' => $request->agenda,
+        ]);
+
+        return redirect()->route('meetings.show', $meeting)->with('status', 'meeting-updated');
     }
 
     /**

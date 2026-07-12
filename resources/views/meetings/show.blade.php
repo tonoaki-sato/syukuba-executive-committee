@@ -20,18 +20,28 @@
                             幹事会
                         @elseif($meeting->type === 'general')
                             総会
-                        @else
+                        @elseif($meeting->type === 'subcommittee')
                             部会
+                        @else
+                            作業
                         @endif
                     </span>
                     <h3 class="fw-bold text-dark mb-0">{{ $meeting->name }}</h3>
                 </div>
-                <!-- 幹事・管理者向け議事録登録ボタン -->
-                @if(Auth::user()->isSystemAdmin() || Auth::user()->isKanji())
-                    <a href="{{ route('meetings.minutes', $meeting) }}" class="btn btn-sm btn-outline-primary py-2 px-3 fw-semibold">
-                        ✍️ 議事録・写真を編集
-                    </a>
-                @endif
+                <div>
+                    <!-- 幹事・管理者向け議事録登録ボタン -->
+                    @if(Auth::user()->isSystemAdmin() || Auth::user()->isKanji())
+                        <a href="{{ route('meetings.minutes', $meeting) }}" class="btn btn-sm btn-outline-primary py-2 px-3 fw-semibold">
+                            ✍️ 議事録の編集
+                        </a>
+                    @endif
+                    <!-- 管理者向け会議編集ボタン -->
+                    @if(Auth::user()->isSystemAdmin())
+                        <a href="{{ route('meetings.edit', $meeting) }}" class="btn btn-sm btn-outline-secondary py-2 px-3 fw-semibold ms-2">
+                            ⚙️ 会議情報を編集
+                        </a>
+                    @endif
+                </div>
             </div>
 
             <div class="row mb-3">

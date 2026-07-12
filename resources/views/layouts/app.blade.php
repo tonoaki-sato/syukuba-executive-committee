@@ -253,10 +253,12 @@
                         会員アカウントを完全に削除しました。
                     @elseif (session('status') === 'meeting-created')
                         新しい会議がスケジュールされました。
+                    @elseif (session('status') === 'meeting-updated')
+                        会議情報を更新しました。
                     @elseif (session('status') === 'attendance-updated')
                         出欠の回答を更新しました。
                     @elseif (session('status') === 'minutes-updated')
-                        議事録とホワイトボード写真を更新しました。
+                        議事録を更新しました。
                     @else
                         {{ session('status') }}
                     @endif

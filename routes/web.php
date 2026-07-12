@@ -66,6 +66,12 @@ Route::middleware(['auth', 'approved'])->group(function () {
     Route::post('/meetings/{meeting}/minutes/analyze', [MeetingController::class, 'analyzeWhiteboard'])->name('meetings.minutes.analyze');
 });
 
+// --- システム管理者（adminロール）限定ルート（会議編集・更新） ---
+Route::middleware(['auth', 'approved', 'admin'])->group(function () {
+    Route::get('/meetings/{meeting}/edit', [MeetingController::class, 'edit'])->name('meetings.edit');
+    Route::put('/meetings/{meeting}', [MeetingController::class, 'update'])->name('meetings.update');
+});
+
 // --- システム管理者（adminロール）限定ルート ---
 Route::middleware(['auth', 'approved', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     // 仮会員承認フロー

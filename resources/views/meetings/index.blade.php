@@ -51,8 +51,10 @@
                                             <span class="badge bg-danger">幹事会</span>
                                         @elseif($meeting->type === 'general')
                                             <span class="badge bg-success">総会</span>
-                                        @else
+                                        @elseif($meeting->type === 'subcommittee')
                                             <span class="badge bg-primary">部会</span>
+                                        @else
+                                            <span class="badge bg-info">作業</span>
                                         @endif
                                     </td>
                                     <td>
