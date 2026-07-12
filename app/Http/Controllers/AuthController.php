@@ -104,6 +104,7 @@ class AuthController extends Controller
         
         $upcomingMeetings = \App\Models\Meeting::where('fiscal_year', $activeYear)
             ->where('held_at', '>=', now()->startOfDay())
+            ->where('held_at', '<=', now()->addMonth())
             ->orderBy('held_at')
             ->get();
 
