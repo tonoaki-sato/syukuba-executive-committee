@@ -101,27 +101,7 @@
                 </div>
             @endif
 
-            <h5 class="fw-bold text-secondary-color border-bottom pb-2 mb-3">📷 ホワイトボードの写真（画像アーカイブ）</h5>
-            @if(is_array($meeting->whiteboard_images) && count($meeting->whiteboard_images) > 0)
-                <div class="row row-cols-1 row-cols-md-2 g-3">
-                    @foreach($meeting->whiteboard_images as $image)
-                        <div class="col">
-                            <div class="card h-100 border-0 shadow-sm overflow-hidden">
-                                <a href="{{ $image }}" target="_blank" title="画像を別ウィンドウで拡大">
-                                    <img src="{{ $image }}" class="card-img-top" alt="ホワイトボード写真" style="height: 200px; object-fit: cover; border-radius: 6px;">
-                                </a>
-                                <div class="card-body p-2 text-center bg-light">
-                                    <span class="text-muted small">クリックして拡大表示</span>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="text-center py-4 text-muted bg-light rounded">
-                    <p class="mb-0 small">アップロードされたホワイトボード画像はありません。</p>
-                </div>
-            @endif
+
         </div>
     </div>
 

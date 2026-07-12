@@ -169,7 +169,7 @@ class MeetingController extends Controller
     }
 
     /**
-     * 議事録とホワイトボード写真の登録・更新処理
+     * 議事録の登録・更新処理
      */
     public function updateMinutes(Request $request, Meeting $meeting)
     {
@@ -179,25 +179,9 @@ class MeetingController extends Controller
 
         $request->validate([
             'minutes' => ['nullable', 'string'],
-            'whiteboard_images' => ['nullable', 'array'],
-            'whiteboard_images.*' => ['image', 'mimes:jpeg,png,jpg', 'max:5120'], // 最大5MB
         ]);
 
         $meeting->minutes = $request->minutes;
-
-        // 画像のアップロード処理
-        if ($request->hasFile('whiteboard_images')) {
-            $existingImages = $meeting->whiteboard_images ?? [];
-
-            foreach ($request->file('whiteboard_images') as $file) {
-                // public/whiteboards ディレクトリに保存
-                $path = $file->store('whiteboards', 'public');
-                $existingImages[] = '/storage/' . $path;
-            }
-
-            $meeting->whiteboard_images = $existingImages;
-        }
-
         $meeting->save();
 
         // LINE用の議事録報告テキストを生成
@@ -205,13 +189,103 @@ class MeetingController extends Controller
         $lineReport = "【会議議事録登録のお知らせ】\n\n";
         $lineReport .= "会議名：{$meeting->name}\n\n";
         $lineReport .= "■決定事項・概要：\n{$summary}\n\n";
-        $lineReport .= "詳細およびホワイトボード写真は以下より確認できます。\n";
+        $lineReport .= "詳細は以下より確認できます。\n";
         $lineReport .= route('meetings.show', $meeting);
 
         // LINE報告用テンプレートを一時的にセッションに入れてリダイレクト
         return redirect()->route('meetings.show', $meeting)
             ->with('status', 'minutes-updated')
             ->with('line_report', $lineReport);
+    }
+
+    /**
+     * ホワイトボード画像をAIで解析し、議事録の下書きを生成
+     */
+    public function analyzeWhiteboard(Request $request, Meeting $meeting)
+    {
+        if (!Auth::user()->isSystemAdmin() && !Auth::user()->isKanji()) {
+            abort(403, '議事録を編集する権限がありません。');
+        }
+
+        $request->validate([
+            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:10240'], // 最大10MB
+        ]);
+
+        $file = $request->file('image');
+        $mimeType = $file->getMimeType();
+        
+        // ディスクへの一時的な保存（一時領域）
+        $tempPath = $file->store('tmp', 'local');
+        $realPath = Storage::disk('local')->path($tempPath);
+
+        $apiKey = config('services.gemini.key');
+        if (!$apiKey) {
+            // 一時ファイルのクリーンアップ
+            Storage::disk('local')->delete($tempPath);
+            return response()->json([
+                'success' => false,
+                'message' => 'AI解析機能が設定されていません。（APIキーが未設定です）'
+            ], 500);
+        }
+
+        try {
+            $base64Data = base64_encode(file_get_contents($realPath));
+
+            $prompt = "添付されたホワイトボードの写真を詳細に解析し、会議の議事録の下書きとして整理してください。\n"
+                    . "手書き文字をテキスト化し、議論の流れや決定事項、宿題事項（タスク）が分かるようにまとめてください。\n"
+                    . "出力は分かりやすい日本語の文章または箇条書きとし、HTMLタグを含めず、Markdown形式で整理して出力してください。";
+
+            $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey;
+
+            $response = \Illuminate\Support\Facades\Http::timeout(30)->post($url, [
+                'contents' => [
+                    [
+                        'parts' => [
+                            [
+                                'text' => $prompt
+                            ],
+                            [
+                                'inlineData' => [
+                                    'mimeType' => $mimeType,
+                                    'data' => $base64Data
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]);
+
+            if ($response->failed()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'AI解析中にエラーが発生しました: ' . $response->reason()
+                ], 500);
+            }
+
+            $result = $response->json();
+            $text = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
+
+            if (empty($text)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => '画像を解析できませんでした。文字が鮮明に写っているか確認してください。'
+                ], 500);
+            }
+
+            return response()->json([
+                'success' => true,
+                'minutes_draft' => trim($text)
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => '通信または処理エラーが発生しました: ' . $e->getMessage()
+            ], 500);
+        } finally {
+            // 解析完了後、成否にかかわらず一時画像ファイルを必ず削除
+            Storage::disk('local')->delete($tempPath);
+        }
     }
 
     /**

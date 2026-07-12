@@ -28,7 +28,6 @@ class Meeting extends Model
         'location',
         'agenda',
         'minutes',
-        'whiteboard_images',
     ];
 
     /**
@@ -40,7 +39,6 @@ class Meeting extends Model
     {
         return [
             'held_at' => 'datetime',
-            'whiteboard_images' => 'array',
         ];
     }
 

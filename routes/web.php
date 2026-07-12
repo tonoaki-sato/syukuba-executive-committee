@@ -63,6 +63,7 @@ Route::middleware(['auth', 'approved'])->group(function () {
     Route::post('/meetings', [MeetingController::class, 'store'])->name('meetings.store');
     Route::get('/meetings/{meeting}/minutes', [MeetingController::class, 'showMinutesForm'])->name('meetings.minutes');
     Route::post('/meetings/{meeting}/minutes', [MeetingController::class, 'updateMinutes']);
+    Route::post('/meetings/{meeting}/minutes/analyze', [MeetingController::class, 'analyzeWhiteboard'])->name('meetings.minutes.analyze');
 });
 
 // --- システム管理者（adminロール）限定ルート ---
