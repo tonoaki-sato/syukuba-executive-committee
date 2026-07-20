@@ -134,10 +134,13 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-link-item">
-                        <a class="nav-link {{ Route::is('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">ポータル</a>
+                        <a class="nav-link {{ Route::is('meetings.*') ? 'active' : '' }}" href="{{ route('meetings.index') }}">会議・出欠</a>
                     </li>
                     <li class="nav-link-item ms-lg-2">
-                        <a class="nav-link {{ Route::is('meetings.*') ? 'active' : '' }}" href="{{ route('meetings.index') }}">会議管理</a>
+                        <a class="nav-link {{ Route::is('documents.*') ? 'active' : '' }}" href="{{ route('documents.index') }}">文書管理</a>
+                    </li>
+                    <li class="nav-link-item ms-lg-2">
+                        <a class="nav-link {{ Route::is('equipment.*') ? 'active' : '' }}" href="{{ route('equipment.index') }}">備品管理</a>
                     </li>
                     
                     @if(Auth::user()->isSystemAdmin() || Auth::user()->isKanji())
@@ -148,9 +151,9 @@
                         <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="gozaDropdown">
                             <li><a class="dropdown-item {{ Route::is('goza.index') ? 'active' : '' }}" href="{{ route('goza.index') }}">ダッシュボード</a></li>
                             <li><a class="dropdown-item {{ Route::is('goza.applications.*') ? 'active' : '' }}" href="{{ route('goza.applications.index') }}">出店応募管理</a></li>
-                            <li><a class="dropdown-item {{ Route::is('goza.spots.*') ? 'active' : '' }}" href="{{ route('goza.spots.index') }}">出店場所配置</a></li>
+                            <li><a class="dropdown-item {{ Route::is('goza.spots.*') ? 'active' : '' }}" href="{{ route('goza.spots.index') }}">出店区画割り (一覧)</a></li>
                             <li><a class="dropdown-item {{ Route::is('goza.payments.*') ? 'active' : '' }}" href="{{ route('goza.payments.index') }}">当日集金・受領</a></li>
-                            <li><a class="dropdown-item {{ Route::is('goza.map.index') ? 'active' : '' }}" href="{{ route('goza.map.index') }}">出店場所地図配置</a></li>
+                            <li><a class="dropdown-item {{ Route::is('goza.map.index') ? 'active' : '' }}" href="{{ route('goza.map.index') }}">会場マップ配置 (地図)</a></li>
                             @if(Auth::user()->isSystemAdmin())
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item {{ Route::is('goza.settings.*') ? 'active' : '' }}" href="{{ route('goza.settings.index') }}">募集設定・料金マスタ</a></li>

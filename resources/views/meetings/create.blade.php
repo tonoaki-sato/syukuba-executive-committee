@@ -3,6 +3,10 @@
 @section('title', '会議の新規スケジュール')
 
 @section('content')
+<div class="mb-3">
+    <a href="{{ route('meetings.index') }}" class="text-decoration-none small text-muted">← 会議・出欠一覧に戻る</a>
+</div>
+
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card p-4 shadow-sm border-0 my-3">

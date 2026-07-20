@@ -3,6 +3,10 @@
 @section('title', '会議情報の編集')
 
 @section('content')
+<div class="mb-3">
+    <a href="{{ route('meetings.show', $meeting) }}" class="text-decoration-none small text-muted">← 会議詳細に戻る</a>
+</div>
+
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card p-4 shadow-sm border-0 my-3">

@@ -38,6 +38,13 @@
                 <a href="{{ route('meetings.index') }}" class="btn btn-outline-secondary btn-sm">会議一覧</a>
             </div>
 
+            @if(isset($pendingAttendanceCount) && $pendingAttendanceCount > 0)
+                <div class="alert alert-warning py-2 px-3 mb-3 d-flex align-items-center justify-content-between" role="alert">
+                    <span class="small fw-bold mb-0">⚠️ 未回答の会議出欠が {{ $pendingAttendanceCount }} 件あります。</span>
+                    <a href="{{ route('meetings.index') }}" class="btn btn-warning btn-xs fw-semibold px-2 py-0" style="font-size: 0.8rem;">回答する</a>
+                </div>
+            @endif
+
             @if($upcomingMeetings->count() > 0)
                 <div class="list-group list-group-flush">
                     @foreach($upcomingMeetings as $meeting)
@@ -153,9 +160,9 @@
                             <span class="text-muted" style="font-size: 0.75em;">出店者・区画・出店料</span>
                         </div>
                         @if(Auth::user()->isSystemAdmin() || Auth::user()->isKanji())
-                            <a href="{{ route('goza.index') }}" class="btn btn-primary btn-sm mt-3">管理画面</a>
+                            <a href="{{ route('goza.index') }}" class="btn btn-outline-primary btn-sm mt-3">管理画面へ</a>
                         @else
-                            <a href="{{ route('goza.map.index') }}" class="btn btn-outline-primary btn-sm mt-3">地図閲覧</a>
+                            <a href="{{ route('goza.map.index') }}" class="btn btn-outline-primary btn-sm mt-3">地図閲覧へ</a>
                         @endif
                     </div>
                 </div>

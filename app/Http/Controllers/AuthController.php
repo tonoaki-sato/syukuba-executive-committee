@@ -108,7 +108,19 @@ class AuthController extends Controller
             ->orderBy('held_at')
             ->get();
 
-        return view('dashboard', compact('activeYear', 'upcomingMeetings'));
+        // ログインユーザーの未回答の会議出欠数を取得
+        $pendingAttendanceCount = 0;
+        if (Auth::check()) {
+            $user = Auth::user();
+            $pendingAttendanceCount = \App\Models\MeetingParticipant::where('user_id', $user->id)
+                ->where('status', 'pending')
+                ->whereHas('meeting', function($q) use ($activeYear) {
+                    $q->where('fiscal_year', $activeYear);
+                })
+                ->count();
+        }
+
+        return view('dashboard', compact('activeYear', 'upcomingMeetings', 'pendingAttendanceCount'));
     }
 
     /**

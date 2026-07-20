@@ -8,6 +8,10 @@
     $w = $weeks[$meeting->held_at->format('w')];
 @endphp
 
+<div class="mb-3">
+    <a href="{{ route('meetings.index') }}" class="text-decoration-none small text-muted">← 会議・出欠一覧に戻る</a>
+</div>
+
 <div class="row">
     <!-- 左側: 会議詳細、出欠登録、議事録表示 -->
     <div class="col-lg-8">
