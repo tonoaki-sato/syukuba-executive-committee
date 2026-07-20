@@ -212,7 +212,7 @@
                         <div>
                             <span class="fs-3 d-block mb-1">🚨</span>
                             <span class="fw-bold small d-block text-dark">安全管理</span>
-                            <span class="text-muted" style="font-size: 0.75em;">警備計画・緊急連絡網</span>
+                            <span class="text-muted" style="font-size: 0.75em;">巡回計画・緊急連絡網</span>
                         </div>
                         <a href="{{ route('safety.index') }}" class="btn btn-outline-primary btn-sm mt-3">計画書閲覧</a>
                     </div>
